@@ -1,0 +1,1680 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GramArogya - Doctor Dashboard</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f4f7fb;
+      color: #1f2937;
+    }
+
+    .header {
+      background: #0f766e;
+      color: white;
+      padding: 20px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header h1 {
+      font-size: 24px;
+    }
+
+    .doctor-info {
+      text-align: right;
+    }
+
+    .doctor-info small {
+      display: block;
+      margin-top: 4px;
+      opacity: 0.9;
+    }
+
+    .logout-btn {
+      margin-left: 15px;
+      margin-top: 8px;
+      padding: 9px 16px;
+      border: none;
+      border-radius: 7px;
+      background: white;
+      color: #0f766e;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+
+    .welcome {
+      margin-bottom: 25px;
+    }
+
+    .welcome h2 {
+      margin-bottom: 7px;
+    }
+
+    .welcome p {
+      color: #6b7280;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 22px;
+      border-radius: 12px;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.07);
+    }
+
+    .stat-card h3 {
+      font-size: 30px;
+      margin-bottom: 7px;
+      color: #0f766e;
+    }
+
+    .stat-card p {
+      color: #6b7280;
+    }
+
+    .section {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.07);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .section-header h2 {
+      font-size: 20px;
+    }
+
+    .refresh-btn {
+      padding: 8px 14px;
+      border: 1px solid #0f766e;
+      background: white;
+      color: #0f766e;
+      border-radius: 7px;
+      cursor: pointer;
+    }
+
+    .consultation-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 15px;
+    }
+
+    .consultation-card:last-child {
+      margin-bottom: 0;
+    }
+
+    .consultation-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .patient-name {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .status {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .status.requested {
+      background: #fff7ed;
+      color: #c2410c;
+    }
+
+    .status.in_progress {
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+
+    .status.completed {
+      background: #ecfdf5;
+      color: #047857;
+    }
+
+    .details {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .detail {
+      background: #f9fafb;
+      padding: 10px;
+      border-radius: 7px;
+    }
+
+    .detail strong {
+      display: block;
+      font-size: 12px;
+      color: #6b7280;
+      margin-bottom: 4px;
+    }
+
+    .symptoms {
+      margin-top: 12px;
+      padding: 12px;
+      background: #f0fdfa;
+      border-radius: 8px;
+    }
+
+    .symptoms strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .action-btn {
+      border: none;
+      padding: 10px 17px;
+      border-radius: 7px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-right: 8px;
+      margin-top: 10px;
+    }
+
+    .accept-btn {
+      background: #0f766e;
+      color: white;
+    }
+
+    .update-btn {
+      background: #2563eb;
+      color: white;
+    }
+
+    .complete-btn {
+      background: #16a34a;
+      color: white;
+    }
+
+    .prescription-btn {
+      background: #7c3aed;
+      color: white;
+    }
+
+    .action-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .form-area {
+      display: none;
+      margin-top: 20px;
+      padding: 20px;
+      background: #f9fafb;
+      border-radius: 10px;
+    }
+
+    .form-area.active {
+      display: block;
+    }
+
+    .form-area h3 {
+      margin-bottom: 18px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 7px;
+    }
+
+    .form-group textarea,
+    .form-group input {
+      width: 100%;
+      padding: 11px;
+      border: 1px solid #d1d5db;
+      border-radius: 7px;
+      font-size: 14px;
+    }
+
+    .form-group textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 30px;
+      color: #6b7280;
+    }
+
+    .message {
+      display: none;
+      padding: 12px;
+      border-radius: 7px;
+      margin-bottom: 15px;
+    }
+
+    .message.success {
+      display: block;
+      background: #ecfdf5;
+      color: #047857;
+    }
+
+    .message.error {
+      display: block;
+      background: #fef2f2;
+      color: #b91c1c;
+    }
+
+    .prescription-box {
+      margin-top: 18px;
+      padding: 15px;
+      background: #faf5ff;
+      border-left: 4px solid #7c3aed;
+      border-radius: 8px;
+    }
+
+    .prescription-box strong {
+      display: block;
+      margin-bottom: 8px;
+      color: #6d28d9;
+    }
+
+    @media (max-width: 800px) {
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .details {
+        grid-template-columns: 1fr;
+      }
+
+      .header {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+      }
+
+      .doctor-info {
+        text-align: center;
+      }
+    }
+
+    @media (max-width: 500px) {
+      .stats {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <header class="header">
+    <div>
+      <h1>GramArogya</h1>
+      <small>Doctor Dashboard</small>
+    </div>
+
+```
+<div class="doctor-info">
+  <span id="doctorName">Loading...</span>
+  <small>Doctor</small>
+  <button class="logout-btn" onclick="logout()">Logout</button>
+</div>
+```
+
+  </header>
+
+  <main class="container">
+
+```
+<div class="welcome">
+  <h2>Welcome, Doctor</h2>
+  <p>Manage patient consultations and clinical records.</p>
+</div>
+
+<div id="message" class="message"></div>
+
+<section class="stats">
+
+  <div class="stat-card">
+    <h3 id="totalCount">0</h3>
+    <p>Total Consultations</p>
+  </div>
+
+  <div class="stat-card">
+    <h3 id="pendingCount">0</h3>
+    <p>Pending Requests</p>
+  </div>
+
+  <div class="stat-card">
+    <h3 id="activeCount">0</h3>
+    <p>Active Consultations</p>
+  </div>
+
+  <div class="stat-card">
+    <h3 id="completedCount">0</h3>
+    <p>Completed</p>
+  </div>
+
+</section>
+
+<section class="section">
+
+  <div class="section-header">
+    <h2>Pending Consultation Requests</h2>
+
+    <button class="refresh-btn" onclick="loadDashboard()">
+      Refresh
+    </button>
+  </div>
+
+  <div id="pendingList">
+    <div class="empty">
+      Loading consultation requests...
+    </div>
+  </div>
+
+</section>
+
+<section class="section">
+
+  <div class="section-header">
+    <h2>My Active Consultations</h2>
+  </div>
+
+  <div id="activeList">
+    <div class="empty">
+      Loading active consultations...
+    </div>
+  </div>
+
+</section>
+
+<section class="section">
+
+  <div class="section-header">
+    <h2>Completed Consultations</h2>
+  </div>
+
+  <div id="completedList">
+    <div class="empty">
+      Loading completed consultations...
+    </div>
+  </div>
+
+</section>
+```
+
+  </main>
+
+  <script>
+
+    const API_BASE_URL = "http://localhost:4000";
+
+    let token = localStorage.getItem("gramarogya_token");
+
+    if (!token) {
+      window.location.href = "gramarogya_login.html";
+    }
+
+    let pendingConsultations = [];
+    let myConsultations = [];
+
+    function showMessage(text, type) {
+
+      const message = document.getElementById("message");
+
+      message.textContent = text;
+      message.className = "message " + type;
+
+      setTimeout(() => {
+        message.className = "message";
+      }, 4000);
+    }
+
+    async function apiRequest(url, options = {}) {
+
+      token = localStorage.getItem("gramarogya_token");
+
+      if (!token) {
+        window.location.href = "gramarogya_login.html";
+        return;
+      }
+
+      const response = await fetch(
+        API_BASE_URL + url,
+        {
+          ...options,
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token,
+            ...(options.headers || {})
+          }
+        }
+      );
+
+      let data = {};
+
+      try {
+        data = await response.json();
+      } catch (error) {
+        data = {};
+      }
+
+      if (response.status === 401) {
+
+        localStorage.removeItem("gramarogya_token");
+        localStorage.removeItem("gramarogya_user");
+        localStorage.removeItem("gramarogya_role");
+
+        window.location.href = "gramarogya_login.html";
+
+        throw new Error("Session expired. Please login again.");
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          data.message || "Request failed"
+        );
+      }
+
+      return data;
+    }
+
+    function getDoctorName() {
+
+      try {
+
+        const userData =
+          localStorage.getItem("gramarogya_user");
+
+        if (!userData) {
+          return "Doctor";
+        }
+
+        const user =
+          JSON.parse(userData);
+
+        return user.full_name || "Doctor";
+
+      } catch (error) {
+
+        return "Doctor";
+      }
+    }
+
+    async function loadPendingRequests() {
+
+      const container =
+        document.getElementById("pendingList");
+
+      try {
+
+        const data =
+          await apiRequest(
+            "/api/consultations/doctor/requests"
+          );
+
+        pendingConsultations =
+          Array.isArray(data.consultations)
+            ? data.consultations
+            : [];
+
+        renderPending();
+
+      } catch (error) {
+
+        container.innerHTML = `
+          <div class="empty">
+            Failed to load consultation requests.
+            <br><br>
+            ${escapeHtml(error.message)}
+          </div>
+        `;
+
+        showMessage(
+          error.message,
+          "error"
+        );
+      }
+    }
+
+    async function loadMyConsultations() {
+
+      const activeContainer =
+        document.getElementById("activeList");
+
+      const completedContainer =
+        document.getElementById("completedList");
+
+      try {
+
+        const data =
+          await apiRequest(
+            "/api/consultations/doctor/my"
+          );
+
+        myConsultations =
+          Array.isArray(data.consultations)
+            ? data.consultations
+            : [];
+
+        renderActive();
+        renderCompleted();
+
+      } catch (error) {
+
+        activeContainer.innerHTML = `
+          <div class="empty">
+            Failed to load consultations.
+            <br><br>
+            ${escapeHtml(error.message)}
+          </div>
+        `;
+
+        completedContainer.innerHTML = `
+          <div class="empty">
+            Failed to load consultations.
+            <br><br>
+            ${escapeHtml(error.message)}
+          </div>
+        `;
+
+        showMessage(
+          error.message,
+          "error"
+        );
+      }
+    }
+
+    function renderPending() {
+
+      const container =
+        document.getElementById("pendingList");
+
+      if (pendingConsultations.length === 0) {
+
+        container.innerHTML = `
+          <div class="empty">
+            No pending consultation requests.
+          </div>
+        `;
+
+        return;
+      }
+
+      container.innerHTML =
+        pendingConsultations.map(
+          consultation => {
+
+            const symptoms =
+              formatSymptoms(
+                consultation.symptoms
+              );
+
+            return `
+              <div class="consultation-card">
+
+                <div class="consultation-top">
+
+                  <div class="patient-name">
+                    ${escapeHtml(
+                      consultation.patient_name || "Unknown Patient"
+                    )}
+                  </div>
+
+                  <span class="status requested">
+                    Requested
+                  </span>
+
+                </div>
+
+                <div class="details">
+
+                  <div class="detail">
+                    <strong>Patient Reference</strong>
+                    ${escapeHtml(
+                      consultation.patient_ref_code || "N/A"
+                    )}
+                  </div>
+
+                  <div class="detail">
+                    <strong>Phone</strong>
+                    ${escapeHtml(
+                      consultation.patient_phone || "N/A"
+                    )}
+                  </div>
+
+                  <div class="detail">
+                    <strong>Mode</strong>
+                    ${escapeHtml(
+                      consultation.mode || "in_person"
+                    )}
+                  </div>
+
+                  <div class="detail">
+                    <strong>Facility</strong>
+                    ${escapeHtml(
+                      consultation.facility_name || "Not assigned"
+                    )}
+                  </div>
+
+                </div>
+
+                <div class="symptoms">
+
+                  <strong>
+                    Symptoms / Reason
+                  </strong>
+
+                  ${escapeHtml(symptoms)}
+
+                </div>
+
+                <button
+                  class="action-btn accept-btn"
+                  onclick="acceptConsultation('${consultation.id}')"
+                >
+                  Accept Consultation
+                </button>
+
+              </div>
+            `;
+          }
+        ).join("");
+    }
+
+    function renderActive() {
+
+      const container =
+        document.getElementById("activeList");
+
+      const active =
+        myConsultations.filter(
+          consultation =>
+            consultation.status === "in_progress"
+        );
+
+      if (active.length === 0) {
+
+        container.innerHTML = `
+          <div class="empty">
+            No active consultations.
+          </div>
+        `;
+
+        return;
+      }
+
+      container.innerHTML =
+        active.map(
+          consultation =>
+            createConsultationCard(
+              consultation,
+              true
+            )
+        ).join("");
+    }
+
+    function renderCompleted() {
+
+      const container =
+        document.getElementById("completedList");
+
+      const completed =
+        myConsultations.filter(
+          consultation =>
+            consultation.status === "completed"
+        );
+
+      if (completed.length === 0) {
+
+        container.innerHTML = `
+          <div class="empty">
+            No completed consultations.
+          </div>
+        `;
+
+        return;
+      }
+
+      container.innerHTML =
+        completed.map(
+          consultation =>
+            createConsultationCard(
+              consultation,
+              false
+            )
+        ).join("");
+    }
+
+    function createConsultationCard(
+      consultation,
+      showForm
+    ) {
+
+      const symptoms =
+        formatSymptoms(
+          consultation.symptoms
+        );
+
+      const vitals =
+        formatVitals(
+          consultation.vitals
+        );
+
+      return `
+        <div class="consultation-card">
+
+          <div class="consultation-top">
+
+            <div class="patient-name">
+              ${escapeHtml(
+                consultation.patient_name || "Unknown Patient"
+              )}
+            </div>
+
+            <span class="status ${escapeHtml(
+              consultation.status || ""
+            )}">
+              ${escapeHtml(
+                consultation.status || "N/A"
+              )}
+            </span>
+
+          </div>
+
+          <div class="details">
+
+            <div class="detail">
+              <strong>Patient Reference</strong>
+              ${escapeHtml(
+                consultation.patient_ref_code || "N/A"
+              )}
+            </div>
+
+            <div class="detail">
+              <strong>Phone</strong>
+              ${escapeHtml(
+                consultation.patient_phone || "N/A"
+              )}
+            </div>
+
+            <div class="detail">
+              <strong>Mode</strong>
+              ${escapeHtml(
+                consultation.mode || "N/A"
+              )}
+            </div>
+
+            <div class="detail">
+              <strong>Facility</strong>
+              ${escapeHtml(
+                consultation.facility_name || "N/A"
+              )}
+            </div>
+
+          </div>
+
+          <div class="symptoms">
+
+            <strong>Symptoms</strong>
+
+            ${escapeHtml(symptoms)}
+
+          </div>
+
+          <div class="symptoms">
+
+            <strong>Vitals</strong>
+
+            ${escapeHtml(vitals)}
+
+          </div>
+
+          ${
+            consultation.diagnosis
+              ? `
+                <div class="symptoms">
+                  <strong>Diagnosis</strong>
+                  ${escapeHtml(
+                    consultation.diagnosis
+                  )}
+                </div>
+              `
+              : ""
+          }
+
+          ${
+            consultation.clinical_notes
+              ? `
+                <div class="symptoms">
+                  <strong>Clinical Notes</strong>
+                  ${escapeHtml(
+                    consultation.clinical_notes
+                  )}
+                </div>
+              `
+              : ""
+          }
+
+          ${
+            consultation.treatment_instructions
+              ? `
+                <div class="symptoms">
+                  <strong>Treatment</strong>
+                  ${escapeHtml(
+                    consultation.treatment_instructions
+                  )}
+                </div>
+              `
+              : ""
+          }
+
+          ${
+            showForm
+              ? `
+
+                <button
+                  class="action-btn update-btn"
+                  onclick="toggleForm('${consultation.id}')"
+                >
+                  Update Consultation
+                </button>
+
+                <button
+                  class="action-btn prescription-btn"
+                  onclick="togglePrescriptionForm('${consultation.id}')"
+                >
+                  Add Prescription
+                </button>
+
+                <div
+                  id="form-${consultation.id}"
+                  class="form-area"
+                >
+
+                  <h3>
+                    Update Consultation
+                  </h3>
+
+                  <div class="form-group">
+                    <label>
+                      Clinical Notes
+                    </label>
+
+                    <textarea
+                      id="notes-${consultation.id}"
+                      placeholder="Enter clinical notes..."
+                    ></textarea>
+
+              </div>
+
+              <div class="form-group">
+                <label>
+                  Diagnosis
+                </label>
+
+                <input
+                  id="diagnosis-${consultation.id}"
+                  type="text"
+                  placeholder="Enter diagnosis..."
+                >
+              </div>
+
+              <div class="form-group">
+                <label>
+                  Treatment Instructions
+                </label>
+
+                <textarea
+                  id="treatment-${consultation.id}"
+                  placeholder="Enter treatment instructions..."
+                ></textarea>
+              </div>
+
+              <div class="form-group">
+                <label>
+                  Temperature
+                </label>
+
+                <input
+                  id="temperature-${consultation.id}"
+                  type="text"
+                  placeholder="Example: 100.4 F"
+                >
+              </div>
+
+              <div class="form-group">
+                <label>
+                  Blood Pressure
+                </label>
+
+                <input
+                  id="bp-${consultation.id}"
+                  type="text"
+                  placeholder="Example: 120/80"
+                >
+              </div>
+
+              <div class="form-group">
+                <label>
+                  Pulse
+                </label>
+
+                <input
+                  id="pulse-${consultation.id}"
+                  type="text"
+                  placeholder="Example: 82 bpm"
+                >
+              </div>
+
+              <button
+                class="action-btn update-btn"
+                onclick="updateConsultation('${consultation.id}')"
+              >
+                Save Update
+              </button>
+
+              <button
+                class="action-btn complete-btn"
+                onclick="completeConsultation('${consultation.id}')"
+              >
+                Complete Consultation
+              </button>
+
+            </div>
+
+            <div
+              id="prescription-form-${consultation.id}"
+              class="form-area"
+            >
+
+              <h3 style="color:#7c3aed;">
+                Create Prescription
+              </h3>
+
+              <div class="form-group">
+                <label>
+                  Medicine Name
+                </label>
+
+                <input
+                  id="medicine-${consultation.id}"
+                  type="text"
+                  placeholder="Example: Paracetamol"
+                >
+              </div>
+
+              <div class="form-group">
+                <label>
+                  Dosage
+                </label>
+
+                <input
+                  id="dosage-${consultation.id}"
+                  type="text"
+                  placeholder="Example: 500 mg"
+                >
+              </div>
+
+              <div class="form-group">
+                <label>
+                  Frequency
+                </label>
+
+                <input
+                  id="frequency-${consultation.id}"
+                  type="text"
+                  placeholder="Example: Twice daily"
+                >
+              </div>
+
+              <div class="form-group">
+                <label>
+                  Duration
+                </label>
+
+                <input
+                  id="duration-${consultation.id}"
+                  type="text"
+                  placeholder="Example: 5 days"
+                >
+              </div>
+
+              <div class="form-group">
+                <label>
+                  Instructions
+                </label>
+
+                <textarea
+                  id="instructions-${consultation.id}"
+                  placeholder="Example: Take after food"
+                ></textarea>
+              </div>
+
+              <div class="form-group">
+                <label>
+                  Additional Advice
+                </label>
+
+                <textarea
+                  id="advice-${consultation.id}"
+                  placeholder="Enter additional medical advice..."
+                ></textarea>
+              </div>
+
+              <button
+                class="action-btn prescription-btn"
+                onclick="createPrescription(
+                  '${consultation.id}',
+                  '${consultation.patient_id || ""}'
+                )"
+              >
+                Save Prescription
+              </button>
+
+            </div>
+
+          `
+          : ""
+      }
+
+    </div>
+  `;
+}
+
+async function acceptConsultation(
+  consultationId
+) {
+
+  try {
+
+    await apiRequest(
+      `/api/consultations/doctor/${consultationId}/accept`,
+      {
+        method: "PATCH"
+      }
+    );
+
+    showMessage(
+      "Consultation accepted successfully.",
+      "success"
+    );
+
+    await loadDashboard();
+
+  } catch (error) {
+
+    showMessage(
+      error.message,
+      "error"
+    );
+  }
+}
+
+function toggleForm(
+  consultationId
+) {
+
+  const form =
+    document.getElementById(
+      `form-${consultationId}`
+    );
+
+  if (form) {
+    form.classList.toggle("active");
+  }
+}
+
+function togglePrescriptionForm(
+  consultationId
+) {
+
+  const form =
+    document.getElementById(
+      `prescription-form-${consultationId}`
+    );
+
+  if (form) {
+    form.classList.toggle("active");
+  }
+}
+
+async function updateConsultation(
+  consultationId
+) {
+
+  const notesElement =
+    document.getElementById(
+      `notes-${consultationId}`
+    );
+
+  const diagnosisElement =
+    document.getElementById(
+      `diagnosis-${consultationId}`
+    );
+
+  const treatmentElement =
+    document.getElementById(
+      `treatment-${consultationId}`
+    );
+
+  const temperatureElement =
+    document.getElementById(
+      `temperature-${consultationId}`
+    );
+
+  const bpElement =
+    document.getElementById(
+      `bp-${consultationId}`
+    );
+
+  const pulseElement =
+    document.getElementById(
+      `pulse-${consultationId}`
+    );
+
+  const clinicalNotes =
+    notesElement
+      ? notesElement.value.trim()
+      : "";
+
+  const diagnosis =
+    diagnosisElement
+      ? diagnosisElement.value.trim()
+      : "";
+
+  const treatment =
+    treatmentElement
+      ? treatmentElement.value.trim()
+      : "";
+
+  const temperature =
+    temperatureElement
+      ? temperatureElement.value.trim()
+      : "";
+
+  const bloodPressure =
+    bpElement
+      ? bpElement.value.trim()
+      : "";
+
+  const pulse =
+    pulseElement
+      ? pulseElement.value.trim()
+      : "";
+
+  try {
+
+    await apiRequest(
+      `/api/consultations/doctor/${consultationId}/update`,
+      {
+        method: "PATCH",
+
+        body: JSON.stringify({
+          clinical_notes:
+            clinicalNotes,
+
+          diagnosis:
+            diagnosis,
+
+          treatment_instructions:
+            treatment,
+
+          vitals: {
+            temperature:
+              temperature,
+
+            blood_pressure:
+              bloodPressure,
+
+            pulse:
+              pulse
+          }
+        })
+      }
+    );
+
+    showMessage(
+      "Consultation updated successfully.",
+      "success"
+    );
+
+    await loadDashboard();
+
+  } catch (error) {
+
+    showMessage(
+      error.message,
+      "error"
+    );
+  }
+}
+
+async function completeConsultation(
+  consultationId
+) {
+
+  const notesElement =
+    document.getElementById(
+      `notes-${consultationId}`
+    );
+
+  const diagnosisElement =
+    document.getElementById(
+      `diagnosis-${consultationId}`
+    );
+
+  const treatmentElement =
+    document.getElementById(
+      `treatment-${consultationId}`
+    );
+
+  const clinicalNotes =
+    notesElement
+      ? notesElement.value.trim()
+      : "";
+
+  const diagnosis =
+    diagnosisElement
+      ? diagnosisElement.value.trim()
+      : "";
+
+  const treatment =
+    treatmentElement
+      ? treatmentElement.value.trim()
+      : "";
+
+  try {
+
+    await apiRequest(
+      `/api/consultations/doctor/${consultationId}/complete`,
+      {
+        method: "PATCH",
+
+        body: JSON.stringify({
+          clinical_notes:
+            clinicalNotes,
+
+          diagnosis:
+            diagnosis,
+
+          treatment_instructions:
+            treatment
+        })
+      }
+    );
+
+    showMessage(
+      "Consultation completed successfully.",
+      "success"
+    );
+
+    await loadDashboard();
+
+  } catch (error) {
+
+    showMessage(
+      error.message,
+      "error"
+    );
+  }
+}
+
+async function createPrescription(
+  consultationId,
+  patientId
+) {
+
+  const medicineElement =
+    document.getElementById(
+      `medicine-${consultationId}`
+    );
+
+  const dosageElement =
+    document.getElementById(
+      `dosage-${consultationId}`
+    );
+
+  const frequencyElement =
+    document.getElementById(
+      `frequency-${consultationId}`
+    );
+
+  const durationElement =
+    document.getElementById(
+      `duration-${consultationId}`
+    );
+
+  const instructionsElement =
+    document.getElementById(
+      `instructions-${consultationId}`
+    );
+
+  const adviceElement =
+    document.getElementById(
+      `advice-${consultationId}`
+    );
+
+  const medicine =
+    medicineElement
+      ? medicineElement.value.trim()
+      : "";
+
+  const dosage =
+    dosageElement
+      ? dosageElement.value.trim()
+      : "";
+
+  const frequency =
+    frequencyElement
+      ? frequencyElement.value.trim()
+      : "";
+
+  const duration =
+    durationElement
+      ? durationElement.value.trim()
+      : "";
+
+  const instructions =
+    instructionsElement
+      ? instructionsElement.value.trim()
+      : "";
+
+  const advice =
+    adviceElement
+      ? adviceElement.value.trim()
+      : "";
+
+  if (!medicine) {
+
+    showMessage(
+      "Medicine name is required.",
+      "error"
+    );
+
+    return;
+  }
+
+  if (!patientId) {
+
+    showMessage(
+      "Patient ID is missing from the consultation.",
+      "error"
+    );
+
+    return;
+  }
+
+  try {
+
+    await apiRequest(
+      "/api/prescriptions/create",
+      {
+        method: "POST",
+
+        body: JSON.stringify({
+
+          consultation_id:
+            consultationId,
+
+          patient_id:
+            patientId,
+
+          additional_advice:
+            advice,
+
+          medicines: [
+
+            {
+              medicine_name:
+                medicine,
+
+              dosage:
+                dosage,
+
+              frequency:
+                frequency,
+
+              duration:
+                duration,
+
+              instructions:
+                instructions
+            }
+
+          ]
+
+        })
+      }
+    );
+
+    showMessage(
+      "Prescription created successfully.",
+      "success"
+    );
+
+    const form =
+      document.getElementById(
+        `prescription-form-${consultationId}`
+      );
+
+    if (form) {
+      form.classList.remove("active");
+    }
+
+    if (medicineElement) {
+      medicineElement.value = "";
+    }
+
+    if (dosageElement) {
+      dosageElement.value = "";
+    }
+
+    if (frequencyElement) {
+      frequencyElement.value = "";
+    }
+
+    if (durationElement) {
+      durationElement.value = "";
+    }
+
+    if (instructionsElement) {
+      instructionsElement.value = "";
+    }
+
+    if (adviceElement) {
+      adviceElement.value = "";
+    }
+
+  } catch (error) {
+
+    showMessage(
+      error.message,
+      "error"
+    );
+  }
+}
+
+async function loadDashboard() {
+
+  await loadPendingRequests();
+
+  await loadMyConsultations();
+
+  updateStats();
+}
+
+function updateStats() {
+
+  const pending =
+    pendingConsultations.length;
+
+  const active =
+    myConsultations.filter(
+      item =>
+        item.status === "in_progress"
+    ).length;
+
+  const completed =
+    myConsultations.filter(
+      item =>
+        item.status === "completed"
+    ).length;
+
+  const total =
+    myConsultations.length + pending;
+
+  document.getElementById(
+    "pendingCount"
+  ).textContent = pending;
+
+  document.getElementById(
+    "activeCount"
+  ).textContent = active;
+
+  document.getElementById(
+    "completedCount"
+  ).textContent = completed;
+
+  document.getElementById(
+    "totalCount"
+  ).textContent = total;
+}
+
+function formatSymptoms(
+  symptoms
+) {
+
+  if (!symptoms) {
+    return "No symptoms provided";
+  }
+
+  if (Array.isArray(symptoms)) {
+
+    return symptoms
+      .filter(Boolean)
+      .join(", ") ||
+      "No symptoms provided";
+  }
+
+  if (typeof symptoms === "object") {
+
+    return Object.values(symptoms)
+      .filter(Boolean)
+      .join(", ") ||
+      "No symptoms provided";
+  }
+
+  return String(symptoms);
+}
+
+function formatVitals(
+  vitals
+) {
+
+  if (!vitals) {
+    return "No vitals recorded";
+  }
+
+  if (
+    typeof vitals === "object" &&
+    Object.keys(vitals).length > 0
+  ) {
+
+    return Object.entries(vitals)
+      .map(
+        ([key, value]) =>
+          `${key}: ${value}`
+      )
+      .join(" | ");
+  }
+
+  return "No vitals recorded";
+}
+
+function escapeHtml(value) {
+
+  if (
+    value === null ||
+    value === undefined
+  ) {
+    return "";
+  }
+
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function logout() {
+
+  localStorage.removeItem(
+    "gramarogya_token"
+  );
+
+  localStorage.removeItem(
+    "gramarogya_user"
+  );
+
+  localStorage.removeItem(
+    "gramarogya_role"
+  );
+
+  window.location.href =
+    "gramarogya_login.html";
+}
+
+document.getElementById(
+  "doctorName"
+).textContent =
+  getDoctorName();
+
+loadDashboard();
+
+  </script>
+
+</body>
+</html>

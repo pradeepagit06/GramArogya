@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+```
+<title>GramArogya — Consultations</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        background: #f4f7f5;
+        color: #263238;
+        min-height: 100vh;
+    }
+
+    .header {
+        background: #176b4d;
+        color: white;
+        padding: 18px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .header h1 {
+        font-size: 24px;
+    }
+
+    .header button {
+        background: white;
+        color: #176b4d;
+        border: none;
+        padding: 9px 16px;
+        border-radius: 7px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .container {
+        width: 92%;
+        max-width: 1100px;
+        margin: 30px auto;
+    }
+
+    .back-link {
+        display: inline-block;
+        margin-bottom: 20px;
+        color: #176b4d;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    .card {
+        background: white;
+        border-radius: 14px;
+        padding: 25px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+    }
+
+    .card h2 {
+        color: #176b4d;
+        margin-bottom: 20px;
+    }
+
+    .info-box {
+        background: #eef7f2;
+        border-left: 4px solid #176b4d;
+        padding: 13px;
+        margin-bottom: 20px;
+        border-radius: 6px;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group.full {
+        grid-column: 1 / -1;
+    }
+
+    label {
+        margin-bottom: 7px;
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    input,
+    select,
+    textarea {
+        padding: 12px;
+        border: 1px solid #ccd6d1;
+        border-radius: 8px;
+        font-size: 15px;
+        outline: none;
+        font-family: Arial, sans-serif;
+    }
+
+    textarea {
+        min-height: 110px;
+        resize: vertical;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+        border-color: #176b4d;
+    }
+
+    .primary {
+        margin-top: 20px;
+        background: #176b4d;
+        color: white;
+        border: none;
+        padding: 13px 22px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 15px;
+        font-weight: bold;
+    }
+
+    .primary:hover {
+        background: #12563e;
+    }
+
+    .primary:disabled {
+        background: #9aa9a2;
+        cursor: not-allowed;
+    }
+
+    .message {
+        margin-top: 15px;
+        padding: 12px;
+        border-radius: 8px;
+        display: none;
+    }
+
+    .success {
+        background: #e5f6ed;
+        color: #176b4d;
+    }
+
+    .error {
+        background: #fde8e8;
+        color: #b42318;
+    }
+
+    .consultation-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .consultation-item {
+        border: 1px solid #dce5e0;
+        border-radius: 10px;
+        padding: 18px;
+        background: #fafcfb;
+    }
+
+    .consultation-item h3 {
+        color: #176b4d;
+        margin-bottom: 12px;
+    }
+
+    .consultation-item p {
+        margin: 7px 0;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .status {
+        display: inline-block;
+        margin-top: 10px;
+        padding: 6px 11px;
+        border-radius: 20px;
+        background: #e8f3ee;
+        color: #176b4d;
+        font-size: 12px;
+        font-weight: bold;
+        text-transform: capitalize;
+    }
+
+    .loading {
+        text-align: center;
+        padding: 20px;
+        color: #176b4d;
+    }
+
+    .empty {
+        text-align: center;
+        padding: 25px;
+        color: #777;
+    }
+
+    .secondary-btn {
+        margin-top: 15px;
+        background: white;
+        color: #176b4d;
+        border: 1px solid #176b4d;
+        padding: 9px 15px;
+        border-radius: 7px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .secondary-btn:hover {
+        background: #eef7f2;
+    }
+
+    @media (max-width: 700px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .form-group.full {
+            grid-column: auto;
+        }
+
+        .header {
+            padding: 15px;
+        }
+
+        .container {
+            width: 95%;
+        }
+    }
+</style>
+```
+
+</head>
+
+<body>
+
+<header class="header">
+
+```
+<h1>GramArogya</h1>
+
+<button onclick="logout()">
+    Logout
+</button>
+```
+
+</header>
+
+<main class="container">
+
+```
+<a
+    href="patient-dashboard.html"
+    class="back-link"
+>
+    ← Back to Dashboard
+</a>
+
+
+<!-- REQUEST CONSULTATION -->
+
+<section class="card">
+
+    <h2>Request Consultation</h2>
+
+    <div class="info-box">
+        Select an appointment if you want to connect the
+        consultation with an existing appointment.
+        Then enter your symptoms or health concern.
+    </div>
+
+
+    <form id="consultationForm">
+
+        <div class="form-grid">
+
+            <!-- APPOINTMENT -->
+
+            <div class="form-group full">
+
+                <label for="appointmentId">
+                    Appointment
+                </label>
+
+                <select id="appointmentId">
+
+                    <option value="">
+                        Select an appointment
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- MODE -->
+
+            <div class="form-group">
+
+                <label for="mode">
+                    Consultation Mode
+                </label>
+
+                <select
+                    id="mode"
+                    required
+                >
+
+                    <option value="in_person">
+                        In Person
+                    </option>
+
+                    <option value="teleconsultation">
+                        Teleconsultation
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- SYMPTOMS -->
+
+            <div class="form-group full">
+
+                <label for="symptoms">
+                    Symptoms / Reason
+                </label>
+
+                <textarea
+                    id="symptoms"
+                    placeholder="Example: Fever, headache and body pain for two days..."
+                    required
+                ></textarea>
+
+            </div>
+
+        </div>
+
+
+        <button
+            type="submit"
+            class="primary"
+            id="requestButton"
+        >
+            Request Consultation
+        </button>
+
+
+        <div
+            id="formMessage"
+            class="message"
+        ></div>
+
+    </form>
+
+</section>
+
+
+<!-- MY CONSULTATIONS -->
+
+<section class="card">
+
+    <h2>My Consultations</h2>
+
+    <div
+        id="consultationsContainer"
+        class="consultation-list"
+    >
+
+        <div class="loading">
+            Loading consultations...
+        </div>
+
+    </div>
+
+</section>
+```
+
+</main>
+
+<script>
+
+    const API_BASE_URL =
+        "http://localhost:4000";
+
+
+    const token =
+        localStorage.getItem(
+            "gramarogya_token"
+        );
+
+
+    if (!token) {
+
+        window.location.href =
+            "gramarogya_login.html";
+
+    }
+
+
+    // ========================================
+    // LOGOUT
+    // ========================================
+
+    function logout() {
+
+        localStorage.removeItem(
+            "gramarogya_token"
+        );
+
+        localStorage.removeItem(
+            "gramarogya_user"
+        );
+
+        localStorage.removeItem(
+            "gramarogya_role"
+        );
+
+        window.location.href =
+            "gramarogya_login.html";
+    }
+
+
+    // ========================================
+    // SHOW MESSAGE
+    // ========================================
+
+    function showMessage(
+        message,
+        type
+    ) {
+
+        const messageBox =
+            document.getElementById(
+                "formMessage"
+            );
+
+        messageBox.textContent =
+            message;
+
+        messageBox.className =
+            "message " + type;
+
+        messageBox.style.display =
+            "block";
+    }
+
+
+    // ========================================
+    // FORMAT DATE
+    // ========================================
+
+    function formatDate(
+        dateString
+    ) {
+
+        if (!dateString) {
+            return "Not available";
+        }
+
+        const date =
+            new Date(dateString);
+
+        return date.toLocaleDateString(
+            "en-IN",
+            {
+                day: "2-digit",
+                month: "short",
+                year: "numeric"
+            }
+        );
+    }
+
+
+    // ========================================
+    // LOAD APPOINTMENTS
+    // ========================================
+
+    async function loadAppointments() {
+
+        const appointmentSelect =
+            document.getElementById(
+                "appointmentId"
+            );
+
+
+        try {
+
+            const response =
+                await fetch(
+                    `${API_BASE_URL}/api/appointments/my`,
+                    {
+                        method: "GET",
+
+                        headers: {
+                            "Authorization":
+                                `Bearer ${token}`
+                        }
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.message ||
+                    "Failed to load appointments"
+                );
+
+            }
+
+
+            const appointments =
+                data.appointments || [];
+
+
+            const activeAppointments =
+                appointments.filter(
+                    appointment =>
+                        appointment.status === "booked"
+                );
+
+
+            activeAppointments.forEach(
+                appointment => {
+
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
+
+
+                    option.value =
+                        appointment.id;
+
+
+                    const date =
+                        appointment.scheduled_date
+                            ? formatDate(
+                                appointment.scheduled_date
+                              )
+                            : "Date not available";
+
+
+                    const time =
+                        appointment.scheduled_time
+                            ? appointment.scheduled_time
+                                .toString()
+                                .substring(0, 5)
+                            : "Time not assigned";
+
+
+                    option.textContent =
+                        `${date} — ${time}`;
+
+
+                    appointmentSelect.appendChild(
+                        option
+                    );
+
+                }
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Load appointments error:",
+                error
+            );
+
+        }
+
+    }
+
+
+    // ========================================
+    // LOAD CONSULTATIONS
+    // ========================================
+
+    async function loadConsultations() {
+
+        const container =
+            document.getElementById(
+                "consultationsContainer"
+            );
+
+
+        try {
+
+            const response =
+                await fetch(
+                    `${API_BASE_URL}/api/consultations/my`,
+                    {
+                        method: "GET",
+
+                        headers: {
+                            "Authorization":
+                                `Bearer ${token}`
+                        }
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            console.log(
+                "Consultations response:",
+                data
+            );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.message ||
+                    "Failed to load consultations"
+                );
+
+            }
+
+
+            const consultations =
+                data.consultations || [];
+
+
+            if (
+                consultations.length === 0
+            ) {
+
+                container.innerHTML = `
+                    <div class="empty">
+                        No consultations found.
+                    </div>
+                `;
+
+                return;
+            }
+
+
+            container.innerHTML =
+                consultations
+                    .map(
+                        consultation => {
+
+                            let symptomsText =
+                                "Not provided";
+
+
+                            if (
+                                Array.isArray(
+                                    consultation.symptoms
+                                ) &&
+                                consultation.symptoms.length > 0
+                            ) {
+
+                                symptomsText =
+                                    consultation.symptoms
+                                        .join(", ");
+
+                            } else if (
+                                typeof consultation.symptoms ===
+                                "string" &&
+                                consultation.symptoms.trim()
+                            ) {
+
+                                symptomsText =
+                                    consultation.symptoms;
+
+                            }
+
+
+                            return `
+
+                                <div
+                                    class="consultation-item"
+                                >
+
+                                    <h3>
+                                        Doctor Consultation
+                                    </h3>
+
+                                    <p>
+                                        <strong>
+                                            Consultation ID:
+                                        </strong>
+                                        ${consultation.id}
+                                    </p>
+
+                                    <p>
+                                        <strong>
+                                            Doctor:
+                                        </strong>
+                                        ${
+                                            consultation.doctor_name ||
+                                            "Doctor not assigned"
+                                        }
+                                    </p>
+
+                                    <p>
+                                        <strong>
+                                            Facility:
+                                        </strong>
+                                        ${
+                                            consultation.facility_name ||
+                                            "Facility not assigned"
+                                        }
+                                    </p>
+
+                                    <p>
+                                        <strong>
+                                            Mode:
+                                        </strong>
+                                        ${
+                                            consultation.mode ||
+                                            "Not specified"
+                                        }
+                                    </p>
+
+                                    <p>
+                                        <strong>
+                                            Symptoms / Reason:
+                                        </strong>
+                                        ${symptomsText}
+                                    </p>
+
+                                    <p>
+                                        <strong>
+                                            Created:
+                                        </strong>
+                                        ${
+                                            formatDate(
+                                                consultation.created_at
+                                            )
+                                        }
+                                    </p>
+
+                                    <span
+                                        class="status"
+                                    >
+                                        ${
+                                            consultation.status ||
+                                            "pending"
+                                        }
+                                    </span>
+
+                                </div>
+
+                            `;
+
+                        }
+                    )
+                    .join("");
+
+    } catch (error) {
+
+        console.error(
+            "Load consultations error:",
+            error
+        );
+
+
+        container.innerHTML = `
+
+            <div
+                class="message error"
+                style="display:block;"
+            >
+                ${error.message}
+            </div>
+
+        `;
+
+    }
+
+    }
+
+
+    // ========================================
+    // REQUEST CONSULTATION
+    // ========================================
+
+    document
+        .getElementById(
+            "consultationForm"
+        )
+        .addEventListener(
+            "submit",
+            async function(event) {
+
+                event.preventDefault();
+
+
+                const appointmentId =
+                    document.getElementById(
+                        "appointmentId"
+                    ).value;
+
+
+                const mode =
+                    document.getElementById(
+                        "mode"
+                    ).value;
+
+
+                const symptomsText =
+                    document.getElementById(
+                        "symptoms"
+                    ).value.trim();
+
+
+                const requestButton =
+                    document.getElementById(
+                        "requestButton"
+                    );
+
+
+                if (!symptomsText) {
+
+                    showMessage(
+                        "Please enter your symptoms or reason.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                /*
+                 * Backend expects:
+                 * appointment_id
+                 * facility_id
+                 * mode
+                 * symptoms
+                 * vitals
+                 */
+
+                let facilityId = null;
+
+
+                /*
+                 * Facility is not required by the backend.
+                 * When appointment is selected, we can
+                 * retrieve its facility from the appointment
+                 * list if available.
+                 */
+
+                const requestBody = {
+
+                    appointment_id:
+                        appointmentId || null,
+
+                    facility_id:
+                        facilityId,
+
+                    mode:
+                        mode,
+
+                    symptoms:
+                        [symptomsText],
+
+                    vitals:
+                        {}
+
+                };
+
+
+                console.log(
+                    "Consultation request:",
+                    requestBody
+                );
+
+
+                try {
+
+                    requestButton.disabled =
+                        true;
+
+                    requestButton.textContent =
+                        "Requesting...";
+
+
+                    const response =
+                        await fetch(
+                            `${API_BASE_URL}/api/consultations/request`,
+                            {
+                                method: "POST",
+
+                                headers: {
+
+                                    "Content-Type":
+                                        "application/json",
+
+                                    "Authorization":
+                                        `Bearer ${token}`
+
+                                },
+
+                                body:
+                                    JSON.stringify(
+                                        requestBody
+                                    )
+
+                            }
+                        );
+
+
+                    const data =
+                        await response.json();
+
+
+                    console.log(
+                        "Consultation response:",
+                        data
+                    );
+
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            data.message ||
+                            "Failed to request consultation"
+                        );
+
+                    }
+
+
+                    showMessage(
+                        "Consultation requested successfully!",
+                        "success"
+                    );
+
+
+                    document
+                        .getElementById(
+                            "consultationForm"
+                        )
+                        .reset();
+
+
+                    document.getElementById(
+                        "mode"
+                    ).value =
+                        "in_person";
+
+
+                    await loadConsultations();
+
+
+                } catch (error) {
+
+                    console.error(
+                        "Consultation request error:",
+                        error
+                    );
+
+
+                    showMessage(
+                        error.message ||
+                        "Failed to request consultation",
+                        "error"
+                    );
+
+
+                } finally {
+
+                    requestButton.disabled =
+                        false;
+
+                    requestButton.textContent =
+                        "Request Consultation";
+
+                }
+
+            }
+        );
+
+
+    // ========================================
+    // INITIAL LOAD
+    // ========================================
+
+    loadAppointments();
+
+    loadConsultations();
+
+</script>
+
+</body>
+</html>

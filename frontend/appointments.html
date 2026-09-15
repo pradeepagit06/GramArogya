@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+```
+<title>GramArogya — Appointments</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        background: #f4f7f5;
+        color: #263238;
+        min-height: 100vh;
+    }
+
+    .header {
+        background: #176b4d;
+        color: white;
+        padding: 18px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .header h1 {
+        font-size: 24px;
+    }
+
+    .header button {
+        background: white;
+        color: #176b4d;
+        border: none;
+        padding: 9px 16px;
+        border-radius: 7px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .container {
+        width: 92%;
+        max-width: 1100px;
+        margin: 30px auto;
+    }
+
+    .back-link {
+        display: inline-block;
+        margin-bottom: 20px;
+        color: #176b4d;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    .card {
+        background: white;
+        border-radius: 14px;
+        padding: 25px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+    }
+
+    .card h2 {
+        color: #176b4d;
+        margin-bottom: 20px;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group.full {
+        grid-column: 1 / -1;
+    }
+
+    label {
+        margin-bottom: 7px;
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    input,
+    select {
+        padding: 12px;
+        border: 1px solid #ccd6d1;
+        border-radius: 8px;
+        font-size: 15px;
+        outline: none;
+    }
+
+    input:focus,
+    select:focus {
+        border-color: #176b4d;
+    }
+
+    button.primary {
+        margin-top: 20px;
+        background: #176b4d;
+        color: white;
+        border: none;
+        padding: 13px 22px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 15px;
+        font-weight: bold;
+    }
+
+    button.primary:hover {
+        background: #12563e;
+    }
+
+    button.primary:disabled {
+        background: #9aa9a2;
+        cursor: not-allowed;
+    }
+
+    .message {
+        margin-top: 15px;
+        padding: 12px;
+        border-radius: 8px;
+        display: none;
+    }
+
+    .success {
+        background: #e5f6ed;
+        color: #176b4d;
+    }
+
+    .error {
+        background: #fde8e8;
+        color: #b42318;
+    }
+
+    .appointment-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .appointment-item {
+        border: 1px solid #dce5e0;
+        border-radius: 10px;
+        padding: 18px;
+        background: #fafcfb;
+    }
+
+    .appointment-item h3 {
+        color: #176b4d;
+        margin-bottom: 10px;
+    }
+
+    .appointment-item p {
+        margin: 5px 0;
+        font-size: 14px;
+    }
+
+    .status {
+        display: inline-block;
+        margin-top: 8px;
+        padding: 5px 10px;
+        border-radius: 20px;
+        background: #e8f3ee;
+        color: #176b4d;
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    .cancel-btn {
+        margin-top: 12px;
+        background: #c62828;
+        color: white;
+        border: none;
+        padding: 8px 14px;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    .cancel-btn:hover {
+        background: #a91f1f;
+    }
+
+    .empty {
+        text-align: center;
+        padding: 25px;
+        color: #777;
+    }
+
+    .loading {
+        text-align: center;
+        padding: 20px;
+        color: #176b4d;
+    }
+
+    .info-box {
+        background: #eef7f2;
+        border-left: 4px solid #176b4d;
+        padding: 12px;
+        margin-bottom: 20px;
+        border-radius: 6px;
+        font-size: 14px;
+    }
+
+    @media (max-width: 700px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .form-group.full {
+            grid-column: auto;
+        }
+
+        .header {
+            padding: 15px;
+        }
+
+        .container {
+            width: 95%;
+        }
+    }
+</style>
+```
+
+</head>
+
+<body>
+
+```
+<header class="header">
+    <h1>GramArogya</h1>
+    <button onclick="logout()">Logout</button>
+</header>
+
+<main class="container">
+
+    <a href="patient-dashboard.html" class="back-link">
+        ← Back to Dashboard
+    </a>
+
+    <!-- BOOK APPOINTMENT -->
+    <section class="card">
+
+        <h2>Book an Appointment</h2>
+
+        <div class="info-box">
+            Select your preferred date and time. Your appointment will be booked at GramArogya Primary Health Centre.
+        </div>
+
+        <form id="appointmentForm">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label for="doctorId">Doctor</label>
+
+                    <select id="doctorId">
+                        <option value="124ebc0f-7065-4933-8ead-5b0cb5b7f557">
+                            Dr. Test Doctor
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="department">Department</label>
+
+                    <select id="department">
+                        <option value="">Select Department</option>
+                        <option value="General Medicine">General Medicine</option>
+                        <option value="Pediatrics">Pediatrics</option>
+                        <option value="Gynecology">Gynecology</option>
+                        <option value="Dermatology">Dermatology</option>
+                        <option value="General">General</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="appointmentDate">Appointment Date</label>
+
+                    <input
+                        type="date"
+                        id="appointmentDate"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="appointmentTime">Appointment Time</label>
+
+                    <input
+                        type="time"
+                        id="appointmentTime"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="priority">Priority</label>
+
+                    <select id="priority">
+                        <option value="normal">Normal</option>
+                        <option value="urgent">Urgent</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <button
+                type="submit"
+                class="primary"
+                id="bookButton"
+            >
+                Book Appointment
+            </button>
+
+            <div id="formMessage" class="message"></div>
+
+        </form>
+
+    </section>
+
+    <!-- MY APPOINTMENTS -->
+    <section class="card">
+
+        <h2>My Appointments</h2>
+
+        <div id="appointmentsContainer" class="appointment-list">
+            <div class="loading">
+                Loading appointments...
+            </div>
+        </div>
+
+    </section>
+
+</main>
+
+<script>
+
+    const API_BASE_URL = "http://localhost:4000";
+
+    const FACILITY_ID =
+        "abd74ee2-f3fa-4a96-8bd8-6d830481fe12";
+
+    const DOCTOR_ID =
+        "124ebc0f-7065-4933-8ead-5b0cb5b7f557";
+
+
+    // ========================================
+    // GET TOKEN
+    // ========================================
+
+    const token =
+        localStorage.getItem("gramarogya_token");
+
+
+    if (!token) {
+        window.location.href = "gramarogya_login.html";
+    }
+
+
+    // ========================================
+    // LOGOUT
+    // ========================================
+
+    function logout() {
+
+        localStorage.removeItem("gramarogya_token");
+        localStorage.removeItem("gramarogya_user");
+        localStorage.removeItem("gramarogya_role");
+
+        window.location.href =
+            "gramarogya_login.html";
+    }
+
+
+    // ========================================
+    // MESSAGE
+    // ========================================
+
+    function showMessage(message, type) {
+
+        const messageBox =
+            document.getElementById("formMessage");
+
+        messageBox.textContent = message;
+
+        messageBox.className =
+            "message " + type;
+
+        messageBox.style.display = "block";
+    }
+
+
+    // ========================================
+    // FORMAT DATE
+    // ========================================
+
+    function formatDate(dateString) {
+
+        if (!dateString) {
+            return "Not specified";
+        }
+
+        const date =
+            new Date(dateString);
+
+        return date.toLocaleDateString(
+            "en-IN",
+            {
+                day: "2-digit",
+                month: "short",
+                year: "numeric"
+            }
+        );
+    }
+
+
+    // ========================================
+    // FORMAT TIME
+    // ========================================
+
+    function formatTime(timeString) {
+
+        if (!timeString) {
+            return "Not specified";
+        }
+
+        return timeString.substring(0, 5);
+    }
+
+
+    // ========================================
+    // LOAD APPOINTMENTS
+    // ========================================
+
+    async function loadAppointments() {
+
+        const container =
+            document.getElementById(
+                "appointmentsContainer"
+            );
+
+        try {
+
+            const response =
+                await fetch(
+                    `${API_BASE_URL}/api/appointments/my`,
+                    {
+                        method: "GET",
+
+                        headers: {
+                            "Authorization":
+                                `Bearer ${token}`
+                        }
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.message ||
+                    "Failed to load appointments"
+                );
+            }
+
+
+            const appointments =
+                data.appointments || [];
+
+
+            if (appointments.length === 0) {
+
+                container.innerHTML = `
+                    <div class="empty">
+                        No appointments found.
+                    </div>
+                `;
+
+                return;
+            }
+
+
+            container.innerHTML =
+                appointments
+                    .map(appointment => {
+
+                        const status =
+                            appointment.status || "unknown";
+
+
+                        const canCancel =
+                            status === "booked";
+
+
+                        return `
+                            <div class="appointment-item">
+
+                                <h3>
+                                    Appointment
+                                </h3>
+
+                                <p>
+                                    <strong>Date:</strong>
+                                    ${formatDate(
+                                        appointment.scheduled_date
+                                    )}
+                                </p>
+
+                                <p>
+                                    <strong>Time:</strong>
+                                    ${formatTime(
+                                        appointment.scheduled_time
+                                    )}
+                                </p>
+
+                                <p>
+                                    <strong>Department:</strong>
+                                    ${
+                                        appointment.department ||
+                                        "General"
+                                    }
+                                </p>
+
+                                <p>
+                                    <strong>Priority:</strong>
+                                    ${
+                                        appointment.priority ||
+                                        "normal"
+                                    }
+                                </p>
+
+                                <p>
+                                    <strong>Queue Number:</strong>
+                                    ${
+                                        appointment.queue_number ||
+                                        "Not assigned"
+                                    }
+                                </p>
+
+                                <span class="status">
+                                    ${status}
+                                </span>
+
+                                ${
+                                    canCancel
+                                        ? `
+                                            <br>
+                                            <button
+                                                class="cancel-btn"
+                                                onclick="cancelAppointment('${appointment.id}')"
+                                            >
+                                                Cancel Appointment
+                                            </button>
+                                          `
+                                        : ""
+                                }
+
+                            </div>
+                        `;
+
+                    })
+                    .join("");
+
+        } catch (error) {
+
+            console.error(
+                "Load appointments error:",
+                error
+            );
+
+            container.innerHTML = `
+                <div class="message error"
+                     style="display:block;">
+                    ${error.message}
+                </div>
+            `;
+        }
+    }
+
+
+    // ========================================
+    // BOOK APPOINTMENT
+    // ========================================
+
+    document
+        .getElementById("appointmentForm")
+        .addEventListener(
+            "submit",
+            async function(event) {
+
+                event.preventDefault();
+
+
+                const doctorId =
+                    document.getElementById(
+                        "doctorId"
+                    ).value;
+
+
+                const department =
+                    document.getElementById(
+                        "department"
+                    ).value;
+
+
+                const priority =
+                    document.getElementById(
+                        "priority"
+                    ).value;
+
+
+                const appointmentDate =
+                    document.getElementById(
+                        "appointmentDate"
+                    ).value;
+
+
+                const appointmentTime =
+                    document.getElementById(
+                        "appointmentTime"
+                    ).value;
+
+
+                const bookButton =
+                    document.getElementById(
+                        "bookButton"
+                    );
+
+
+                if (!appointmentDate) {
+
+                    showMessage(
+                        "Please select an appointment date.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                // IMPORTANT:
+                // Backend expects snake_case names.
+                const requestBody = {
+
+                    facility_id:
+                        FACILITY_ID,
+
+                    doctor_id:
+                        doctorId || null,
+
+                    department:
+                        department || null,
+
+                    priority:
+                        priority || "normal",
+
+                    scheduled_date:
+                        appointmentDate,
+
+                    scheduled_time:
+                        appointmentTime || null
+                };
+
+
+                console.log(
+                    "Booking request:",
+                    requestBody
+                );
+
+
+                try {
+
+                    bookButton.disabled = true;
+
+                    bookButton.textContent =
+                        "Booking...";
+
+
+                    const response =
+                        await fetch(
+                            `${API_BASE_URL}/api/appointments/book`,
+                            {
+                                method: "POST",
+
+                                headers: {
+                                    "Content-Type":
+                                        "application/json",
+
+                                    "Authorization":
+                                        `Bearer ${token}`
+                                },
+
+                                body:
+                                    JSON.stringify(
+                                        requestBody
+                                    )
+                            }
+                        );
+
+
+                    const data =
+                        await response.json();
+
+
+                    console.log(
+                        "Booking response:",
+                        data
+                    );
+
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            data.message ||
+                            "Failed to book appointment"
+                        );
+                    }
+
+
+                    showMessage(
+                        "Appointment booked successfully!",
+                        "success"
+                    );
+
+
+                    document
+                        .getElementById(
+                            "appointmentForm"
+                        )
+                        .reset();
+
+
+                    document.getElementById(
+                        "priority"
+                    ).value = "normal";
+
+
+                    document.getElementById(
+                        "doctorId"
+                    ).value = DOCTOR_ID;
+
+
+                    await loadAppointments();
+
+
+                } catch (error) {
+
+                    console.error(
+                        "Booking error:",
+                        error
+                    );
+
+
+                    showMessage(
+                        error.message ||
+                        "Failed to book appointment",
+                        "error"
+                    );
+
+                } finally {
+
+                    bookButton.disabled = false;
+
+                    bookButton.textContent =
+                        "Book Appointment";
+                }
+
+            }
+        );
+
+
+    // ========================================
+    // CANCEL APPOINTMENT
+    // ========================================
+
+    async function cancelAppointment(
+        appointmentId
+    ) {
+
+        const confirmed =
+            confirm(
+                "Are you sure you want to cancel this appointment?"
+            );
+
+
+        if (!confirmed) {
+            return;
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+                    `${API_BASE_URL}/api/appointments/${appointmentId}/cancel`,
+                    {
+                        method: "PATCH",
+
+                        headers: {
+                            "Authorization":
+                                `Bearer ${token}`
+                        }
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.message ||
+                    "Failed to cancel appointment"
+                );
+            }
+
+
+            alert(
+                "Appointment cancelled successfully."
+            );
+
+
+            await loadAppointments();
+
+
+        } catch (error) {
+
+            console.error(
+                "Cancel appointment error:",
+                error
+            );
+
+
+            alert(
+                error.message ||
+                "Failed to cancel appointment"
+            );
+        }
+    }
+
+
+    // ========================================
+    // SET MINIMUM DATE = TODAY
+    // ========================================
+
+    function setMinimumDate() {
+
+        const today =
+            new Date();
+
+        const year =
+            today.getFullYear();
+
+        const month =
+            String(
+                today.getMonth() + 1
+            ).padStart(2, "0");
+
+        const day =
+            String(
+                today.getDate()
+            ).padStart(2, "0");
+
+
+        const todayString =
+            `${year}-${month}-${day}`;
+
+
+        document.getElementById(
+            "appointmentDate"
+        ).min = todayString;
+    }
+
+
+    // ========================================
+    // INITIAL LOAD
+    // ========================================
+
+    setMinimumDate();
+
+    loadAppointments();
+
+</script>
+```
+
+</body>
+</html>
+
+
+

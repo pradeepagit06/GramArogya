@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GramArogya - Diagnostics</title>
+
+```
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+        background: #f4f7f6;
+        color: #1f2937;
+    }
+
+    .navbar {
+        background: #176b5b;
+        color: white;
+        padding: 18px 35px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .navbar h1 {
+        font-size: 24px;
+    }
+
+    .navbar-right {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    #navUserName {
+        font-weight: 600;
+    }
+
+    .logout-btn {
+        background: white;
+        color: #176b5b;
+        border: none;
+        padding: 9px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .logout-btn:hover {
+        background: #e8f5f1;
+    }
+
+    .container {
+        width: 92%;
+        max-width: 1300px;
+        margin: 30px auto;
+    }
+
+    .welcome {
+        margin-bottom: 25px;
+    }
+
+    .welcome h2 {
+        font-size: 28px;
+        margin-bottom: 6px;
+    }
+
+    .welcome p {
+        color: #6b7280;
+    }
+
+    .section {
+        background: white;
+        border-radius: 16px;
+        padding: 25px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .section-header h2 {
+        font-size: 21px;
+    }
+
+    .refresh-btn {
+        background: #176b5b;
+        color: white;
+        border: none;
+        padding: 9px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+    .refresh-btn:hover {
+        background: #125447;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group.full {
+        grid-column: 1 / -1;
+    }
+
+    label {
+        font-size: 14px;
+        color: #374151;
+        font-weight: 600;
+        margin-bottom: 7px;
+    }
+
+    input,
+    select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 9px;
+        font-size: 14px;
+        outline: none;
+    }
+
+    input:focus,
+    select:focus {
+        border-color: #176b5b;
+    }
+
+    .submit-btn {
+        background: #176b5b;
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 9px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    .submit-btn:hover {
+        background: #125447;
+    }
+
+    .message {
+        margin-top: 15px;
+        padding: 12px;
+        border-radius: 8px;
+        display: none;
+        font-size: 14px;
+    }
+
+    .success-message {
+        display: block;
+        background: #dcfce7;
+        color: #15803d;
+    }
+
+    .error-message {
+        display: block;
+        background: #fee2e2;
+        color: #b91c1c;
+    }
+
+    .table-container {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 750px;
+    }
+
+    th {
+        background: #eef7f4;
+        color: #176b5b;
+        padding: 13px;
+        text-align: left;
+        font-size: 14px;
+    }
+
+    td {
+        padding: 13px;
+        border-bottom: 1px solid #e5e7eb;
+        font-size: 14px;
+    }
+
+    .empty {
+        padding: 25px;
+        text-align: center;
+        color: #6b7280;
+    }
+
+    .status {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+        text-transform: capitalize;
+    }
+
+    .status-requested {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .status-scheduled {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+    .status-sample_collected {
+        background: #e0e7ff;
+        color: #4338ca;
+    }
+
+    .status-in_progress {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+    .status-completed {
+        background: #dcfce7;
+        color: #15803d;
+    }
+
+    .status-cancelled {
+        background: #fee2e2;
+        color: #b91c1c;
+    }
+
+    .status-unknown {
+        background: #f3f4f6;
+        color: #374151;
+    }
+
+    .view-btn {
+        background: #176b5b;
+        color: white;
+        border: none;
+        padding: 7px 12px;
+        border-radius: 7px;
+        cursor: pointer;
+        font-size: 12px;
+    }
+
+    .view-btn:hover {
+        background: #125447;
+    }
+
+    .report-box {
+        margin-top: 20px;
+        padding: 18px;
+        background: #f8faf9;
+        border-radius: 12px;
+        border: 1px solid #e5e7eb;
+        display: none;
+    }
+
+    .report-box h3 {
+        color: #176b5b;
+        margin-bottom: 12px;
+    }
+
+    .report-item {
+        margin-bottom: 12px;
+    }
+
+    .report-label {
+        font-size: 13px;
+        color: #6b7280;
+        margin-bottom: 4px;
+    }
+
+    .report-value {
+        font-size: 15px;
+        font-weight: 600;
+    }
+
+    @media (max-width: 700px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .form-group.full {
+            grid-column: auto;
+        }
+
+        .navbar {
+            padding: 15px 20px;
+        }
+
+        .navbar h1 {
+            font-size: 19px;
+        }
+
+        #navUserName {
+            display: none;
+        }
+
+        .container {
+            width: 94%;
+            margin: 20px auto;
+        }
+
+        .welcome h2 {
+            font-size: 23px;
+        }
+    }
+</style>
+```
+
+</head>
+
+<body>
+
+<nav class="navbar">
+
+```
+<h1>GramArogya</h1>
+
+<div class="navbar-right">
+    <span id="navUserName">Patient</span>
+
+    <button class="logout-btn" onclick="logout()">
+        Logout
+    </button>
+</div>
+```
+
+</nav>
+
+<main class="container">
+
+```
+<div class="welcome">
+
+    <h2 id="welcomeText">
+        Diagnostics
+    </h2>
+
+    <p>
+        Request and track your diagnostic tests
+    </p>
+
+</div>
+
+<section class="section">
+
+    <div class="section-header">
+
+        <h2>
+            Request Diagnostic Test
+        </h2>
+
+    </div>
+
+    <form id="diagnosticForm">
+
+        <div class="form-grid">
+
+            <div class="form-group full">
+
+                <label for="testName">
+                    Test Name
+                </label>
+
+                <select id="testName" required>
+
+                    <option value="">
+                        Select a diagnostic test
+                    </option>
+
+                    <option value="Complete Blood Count">
+                        Complete Blood Count
+                    </option>
+
+                    <option value="Blood Sugar Test">
+                        Blood Sugar Test
+                    </option>
+
+                    <option value="Lipid Profile">
+                        Lipid Profile
+                    </option>
+
+                    <option value="Liver Function Test">
+                        Liver Function Test
+                    </option>
+
+                    <option value="Kidney Function Test">
+                        Kidney Function Test
+                    </option>
+
+                    <option value="Thyroid Function Test">
+                        Thyroid Function Test
+                    </option>
+
+                    <option value="Urine Test">
+                        Urine Test
+                    </option>
+
+                    <option value="ECG">
+                        ECG
+                    </option>
+
+                    <option value="Chest X-Ray">
+                        Chest X-Ray
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div class="form-group full">
+
+                <button
+                    type="submit"
+                    class="submit-btn"
+                    id="requestBtn"
+                >
+                    Request Test
+                </button>
+
+            </div>
+
+        </div>
+
+    </form>
+
+    <div id="formMessage" class="message"></div>
+
+</section>
+
+<section class="section">
+
+    <div class="section-header">
+
+        <h2>
+            My Diagnostic Requests
+        </h2>
+
+        <button
+            class="refresh-btn"
+            onclick="loadDiagnostics()"
+        >
+            Refresh
+        </button>
+
+    </div>
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Test Name</th>
+                    <th>Facility</th>
+                    <th>Requested Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+
+            </thead>
+
+            <tbody id="diagnosticsTableBody">
+
+                <tr>
+
+                    <td colspan="5" class="empty">
+                        Loading diagnostic requests...
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <div id="reportBox" class="report-box">
+
+        <h3>
+            Diagnostic Report
+        </h3>
+
+        <div id="reportContent">
+            Loading report...
+        </div>
+
+    </div>
+
+</section>
+```
+
+</main>
+
+<script>
+
+    const API_BASE_URL = "http://localhost:4000";
+
+    const token =
+        localStorage.getItem("gramarogya_token");
+
+    if (!token) {
+
+        window.location.href =
+            "gramarogya_login.html";
+
+    }
+
+    function getHeaders() {
+
+        return {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+        };
+
+    }
+
+    function escapeHtml(value) {
+
+        if (value === null || value === undefined) {
+            return "";
+        }
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+
+    }
+
+    function showMessage(message, type) {
+
+        const box =
+            document.getElementById("formMessage");
+
+        box.textContent = message;
+
+        box.className =
+            "message " +
+            (type === "success"
+                ? "success-message"
+                : "error-message");
+
+    }
+
+    function formatDate(dateValue) {
+
+        if (!dateValue) {
+            return "-";
+        }
+
+        const date =
+            new Date(dateValue);
+
+        if (isNaN(date.getTime())) {
+            return dateValue;
+        }
+
+        return date.toLocaleDateString();
+
+    }
+
+    function statusClass(status) {
+
+        if (!status) {
+            return "status-unknown";
+        }
+
+        return "status-" +
+            status.toLowerCase();
+
+    }
+
+    async function loadProfileName() {
+
+        try {
+
+            const response =
+                await fetch(
+                    API_BASE_URL +
+                    "/api/patient/profile",
+                    {
+                        method: "GET",
+                        headers: getHeaders()
+                    }
+                );
+
+            const data =
+                await response.json();
+
+            if (!response.ok) {
+                return;
+            }
+
+            const patient =
+                data.patient;
+
+            if (!patient) {
+                return;
+            }
+
+            const name =
+                patient.full_name ||
+                "Patient";
+
+            document.getElementById(
+                "navUserName"
+            ).textContent = name;
+
+            document.getElementById(
+                "welcomeText"
+            ).textContent =
+                "Diagnostics - " + name;
+
+        } catch (error) {
+
+            console.error(
+                "Profile name error:",
+                error
+            );
+
+        }
+
+    }
+
+    async function loadDiagnostics() {
+
+        const tbody =
+            document.getElementById(
+                "diagnosticsTableBody"
+            );
+
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="5" class="empty">
+                    Loading diagnostic requests...
+                </td>
+            </tr>
+        `;
+
+        try {
+
+            const response =
+                await fetch(
+                    API_BASE_URL +
+                    "/api/diagnostics/my",
+                    {
+                        method: "GET",
+                        headers: getHeaders()
+                    }
+                );
+
+            const data =
+                await response.json();
+
+            console.log(
+                "Diagnostics response:",
+                data
+            );
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.message ||
+                    "Unable to load diagnostics"
+                );
+
+            }
+
+            let diagnostics = [];
+
+            if (Array.isArray(data)) {
+
+                diagnostics = data;
+
+            } else if (
+                Array.isArray(
+                    data.diagnostic_requests
+                )
+            ) {
+
+                diagnostics =
+                    data.diagnostic_requests;
+
+            } else if (
+                Array.isArray(data.data)
+            ) {
+
+                diagnostics =
+                    data.data;
+
+            } else if (
+                Array.isArray(data.rows)
+            ) {
+
+                diagnostics =
+                    data.rows;
+
+            }
+
+            if (diagnostics.length === 0) {
+
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="empty">
+                            No diagnostic requests found.
+                        </td>
+                    </tr>
+                `;
+
+                return;
+
+            }
+
+            tbody.innerHTML = "";
+
+            diagnostics.forEach(
+                function (diagnostic) {
+
+                    const row =
+                        document.createElement("tr");
+
+                    const testName =
+                        diagnostic.test_name ||
+                        "-";
+
+                    const facility =
+                        diagnostic.facility_name ||
+                        "Not assigned";
+
+                    const requestedDate =
+                        formatDate(
+                            diagnostic.requested_at
+                        );
+
+                    const status =
+                        diagnostic.status ||
+                        "unknown";
+
+                    const action =
+                        status === "completed"
+                            ? `
+                                <button
+                                    class="view-btn"
+                                    onclick="viewReport('${diagnostic.id}')"
+                                >
+                                    View Report
+                                </button>
+                              `
+                            : "-";
+
+                    row.innerHTML = `
+
+                        <td>
+                            ${escapeHtml(testName)}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(facility)}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(requestedDate)}
+                        </td>
+
+                        <td>
+                            <span class="status ${statusClass(status)}">
+                                ${escapeHtml(status)}
+                            </span>
+                        </td>
+
+                        <td>
+                            ${action}
+                        </td>
+
+                    `;
+
+                    tbody.appendChild(row);
+
+                }
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Diagnostics error:",
+                error
+            );
+
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="empty">
+                        Unable to load diagnostic requests.
+                    </td>
+                </tr>
+            `;
+
+        }
+
+    }
+
+    async function requestDiagnostic(event) {
+
+        event.preventDefault();
+
+        const testName =
+            document.getElementById(
+                "testName"
+            ).value;
+
+        const button =
+            document.getElementById(
+                "requestBtn"
+            );
+
+        if (!testName) {
+
+            showMessage(
+                "Please select a diagnostic test.",
+                "error"
+            );
+
+            return;
+
+        }
+
+        button.disabled = true;
+        button.textContent = "Requesting...";
+
+        try {
+
+            const response =
+                await fetch(
+                    API_BASE_URL +
+                    "/api/diagnostics/request",
+                    {
+                        method: "POST",
+                        headers: getHeaders(),
+                        body: JSON.stringify({
+                            test_name: testName
+                        })
+                    }
+                );
+
+            const data =
+                await response.json();
+
+            console.log(
+                "Diagnostic request response:",
+                data
+            );
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.message ||
+                    "Failed to request diagnostic test"
+                );
+
+            }
+
+            showMessage(
+                "Diagnostic test requested successfully.",
+                "success"
+            );
+
+            document.getElementById(
+                "diagnosticForm"
+            ).reset();
+
+            await loadDiagnostics();
+
+        } catch (error) {
+
+            console.error(
+                "Request diagnostic error:",
+                error
+            );
+
+            showMessage(
+                error.message ||
+                "Failed to request diagnostic test.",
+                "error"
+            );
+
+        } finally {
+
+            button.disabled = false;
+            button.textContent = "Request Test";
+
+        }
+
+    }
+
+    async function viewReport(requestId) {
+
+        const reportBox =
+            document.getElementById(
+                "reportBox"
+            );
+
+        const reportContent =
+            document.getElementById(
+                "reportContent"
+            );
+
+        reportBox.style.display = "block";
+
+        reportContent.innerHTML =
+            "Loading report...";
+
+        try {
+
+            const response =
+                await fetch(
+                    API_BASE_URL +
+                    "/api/diagnostics/" +
+                    requestId,
+                    {
+                        method: "GET",
+                        headers: getHeaders()
+                    }
+                );
+
+            const data =
+                await response.json();
+
+            console.log(
+                "Diagnostic report response:",
+                data
+            );
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.message ||
+                    "Unable to load report"
+                );
+
+            }
+
+            const request =
+                data.diagnostic_request;
+
+            const reports =
+                Array.isArray(data.reports)
+                    ? data.reports
+                    : [];
+
+            let reportHtml = "";
+
+            reportHtml += `
+                <div class="report-item">
+
+                    <div class="report-label">
+                        Test Name
+                    </div>
+
+                    <div class="report-value">
+                        ${escapeHtml(
+                            request?.test_name || "-"
+                        )}
+                    </div>
+
+                </div>
+
+                <div class="report-item">
+
+                    <div class="report-label">
+                        Status
+                    </div>
+
+                    <div class="report-value">
+                        ${escapeHtml(
+                            request?.status || "-"
+                        )}
+                    </div>
+
+                </div>
+            `;
+
+            if (reports.length === 0) {
+
+                reportHtml += `
+                    <div class="report-item">
+                        <div class="report-label">
+                            Result
+                        </div>
+
+                        <div class="report-value">
+                            No report available.
+                        </div>
+                    </div>
+                `;
+
+            } else {
+
+                reports.forEach(
+                    function (report, index) {
+
+                        reportHtml += `
+
+                            <div class="report-item">
+
+                                <div class="report-label">
+                                    Report ${index + 1}
+                                </div>
+
+                                <div class="report-value">
+                                    ${
+                                        escapeHtml(
+                                            report.result_summary ||
+                                            "No result summary available."
+                                        )
+                                    }
+                                </div>
+
+                            </div>
+                        `;
+
+                        if (report.report_file_url) {
+
+                            reportHtml += `
+
+                                <div class="report-item">
+
+                                    <div class="report-label">
+                                        Report File
+                                    </div>
+
+                                    <div class="report-value">
+
+                                        <a
+                                            href="${escapeHtml(
+                                                report.report_file_url
+                                            )}"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            View Report File
+                                        </a>
+
+                                    </div>
+
+                                </div>
+
+                            `;
+
+                        }
+
+                    }
+                );
+
+            }
+
+            reportContent.innerHTML =
+                reportHtml;
+
+            reportBox.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+
+        } catch (error) {
+
+            console.error(
+                "View report error:",
+                error
+            );
+
+            reportContent.innerHTML = `
+                <div class="error-message">
+                    Unable to load diagnostic report.
+                </div>
+            `;
+
+        }
+
+    }
+
+    function logout() {
+
+        localStorage.removeItem(
+            "gramarogya_token"
+        );
+
+        localStorage.removeItem(
+            "gramarogya_user"
+        );
+
+        localStorage.removeItem(
+            "gramarogya_role"
+        );
+
+        window.location.href =
+            "gramarogya_login.html";
+
+    }
+
+    document.getElementById(
+        "diagnosticForm"
+    ).addEventListener(
+        "submit",
+        requestDiagnostic
+    );
+
+    async function loadPage() {
+
+        await Promise.all([
+            loadProfileName(),
+            loadDiagnostics()
+        ]);
+
+    }
+
+    loadPage();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,2276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GramArogya - Patient Dashboard</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f7f5;
+      color: #1f2937;
+    }
+
+    .navbar {
+      background: #166534;
+      color: white;
+      padding: 16px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .nav-right span {
+      font-size: 14px;
+    }
+
+    .logout-btn {
+      border: none;
+      background: white;
+      color: #166534;
+      padding: 9px 16px;
+      border-radius: 7px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .logout-btn:hover {
+      background: #dcfce7;
+    }
+
+    .container {
+      width: min(1200px, 94%);
+      margin: 25px auto 50px;
+    }
+
+    .message {
+      display: none;
+      padding: 13px 16px;
+      border-radius: 8px;
+      margin-bottom: 18px;
+      font-weight: 600;
+    }
+
+    .error {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .success {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .welcome {
+      background: linear-gradient(135deg, #166534, #15803d);
+      color: white;
+      border-radius: 14px;
+      padding: 28px;
+      margin-bottom: 22px;
+    }
+
+    .welcome h1 {
+      margin-bottom: 8px;
+    }
+
+    .welcome p {
+      opacity: 0.92;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .summary-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+      border-left: 5px solid #16a34a;
+    }
+
+    .summary-card h3 {
+      color: #6b7280;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .summary-card .number {
+      font-size: 28px;
+      font-weight: bold;
+      color: #166534;
+    }
+
+    .section {
+      background: white;
+      border-radius: 12px;
+      padding: 22px;
+      margin-bottom: 22px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .section-header h2 {
+      color: #166534;
+      font-size: 20px;
+    }
+
+    .refresh-btn,
+    .primary-btn,
+    .danger-btn,
+    .small-btn {
+      border: none;
+      border-radius: 7px;
+      padding: 9px 14px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .refresh-btn {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .refresh-btn:hover {
+      background: #bbf7d0;
+    }
+
+    .primary-btn {
+      background: #166534;
+      color: white;
+    }
+
+    .primary-btn:hover {
+      background: #14532d;
+    }
+
+    .primary-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .danger-btn {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .danger-btn:hover {
+      background: #fecaca;
+    }
+
+    .small-btn {
+      background: #e5e7eb;
+      color: #374151;
+      padding: 7px 11px;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 700px;
+    }
+
+    th,
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    th {
+      background: #f0fdf4;
+      color: #166534;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 5px 9px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      background: #e5e7eb;
+      color: #374151;
+    }
+
+    .status.booked,
+    .status.upcoming,
+    .status.accepted,
+    .status.completed,
+    .status.confirmed,
+    .status.in_queue,
+    .status.arrived,
+    .status.patient_arrived {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .status.cancelled {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .status.requested,
+    .status.in_progress,
+    .status.scheduled,
+    .status.created {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .status.received,
+    .status.sent {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    .profile-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+    }
+
+    .info-box {
+      background: #f9fafb;
+      padding: 15px;
+      border-radius: 8px;
+    }
+
+    .info-box label {
+      display: block;
+      color: #6b7280;
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .info-box strong {
+      color: #111827;
+      word-break: break-word;
+    }
+
+    .health-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+
+    .health-box {
+      background: #f9fafb;
+      padding: 16px;
+      border-radius: 9px;
+    }
+
+    .health-box h4 {
+      color: #166534;
+      margin-bottom: 8px;
+    }
+
+    .health-box p {
+      color: #4b5563;
+      line-height: 1.5;
+    }
+
+    .card-list {
+      display: grid;
+      gap: 15px;
+    }
+
+    .item-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 17px;
+    }
+
+    .item-card h3 {
+      color: #166534;
+      margin-bottom: 8px;
+    }
+
+    .item-card p {
+      margin: 5px 0;
+      color: #4b5563;
+      line-height: 1.5;
+    }
+
+    .medicine-list {
+      margin-top: 12px;
+      padding-left: 20px;
+    }
+
+    .medicine-list li {
+      margin-bottom: 6px;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 25px;
+      color: #6b7280;
+      background: #f9fafb;
+      border-radius: 8px;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #6b7280;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group.full {
+      grid-column: 1 / -1;
+    }
+
+    .form-group label {
+      font-weight: bold;
+      color: #374151;
+      font-size: 14px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      border: 1px solid #d1d5db;
+      border-radius: 7px;
+      padding: 10px;
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: #16a34a;
+      box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.12);
+    }
+
+    .form-group textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .action-row {
+      margin-top: 15px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .risk-high {
+      color: #b91c1c;
+      font-weight: bold;
+    }
+
+    .risk-normal {
+      color: #166534;
+      font-weight: bold;
+    }
+
+    .helper-text {
+      color: #6b7280;
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .booking-note {
+      margin-top: 15px;
+      background: #f0fdf4;
+      border-left: 4px solid #16a34a;
+      padding: 12px;
+      border-radius: 6px;
+      color: #166534;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 900px) {
+      .summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .profile-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .navbar {
+        padding: 14px 16px;
+      }
+
+      .nav-right span {
+        display: none;
+      }
+
+      .container {
+        width: 95%;
+      }
+
+      .summary-grid,
+      .profile-grid,
+      .health-grid,
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .welcome {
+        padding: 22px;
+      }
+
+      .section {
+        padding: 16px;
+      }
+
+      .section-header {
+        gap: 10px;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="navbar">
+    <div class="logo">🌿 GramArogya</div>
+
+    <div class="nav-right">
+      <span id="navPatientName">Patient</span>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="container">
+
+    <div id="errorMessage" class="message error"></div>
+    <div id="successMessage" class="message success"></div>
+
+    <div class="welcome">
+      <h1 id="welcomeName">Welcome 👋</h1>
+      <p>Your personal rural healthcare dashboard</p>
+    </div>
+
+    <div class="summary-grid">
+
+      <div class="summary-card">
+        <h3>Upcoming Appointments</h3>
+        <div class="number" id="appointmentCount">0</div>
+      </div>
+
+      <div class="summary-card">
+        <h3>Consultations</h3>
+        <div class="number" id="consultationCount">0</div>
+      </div>
+
+      <div class="summary-card">
+        <h3>Prescriptions</h3>
+        <div class="number" id="prescriptionCount">0</div>
+      </div>
+
+      <div class="summary-card">
+        <h3>Follow-ups</h3>
+        <div class="number" id="followUpCount">0</div>
+      </div>
+
+    </div>
+
+    <!-- PROFILE -->
+
+    <section class="section">
+
+      <div class="section-header">
+        <h2>👤 My Profile</h2>
+        <button class="refresh-btn" onclick="loadProfile()">Refresh</button>
+      </div>
+
+      <div id="profileContainer" class="profile-grid">
+        <div class="loading">Loading profile...</div>
+      </div>
+
+    </section>
+
+    <!-- APPOINTMENTS -->
+
+    <section class="section">
+
+      <div class="section-header">
+        <h2>📅 My Appointments</h2>
+        <button class="refresh-btn" onclick="loadAppointments()">Refresh</button>
+      </div>
+
+      <div class="table-wrapper">
+        <div id="appointmentsContainer">
+          <div class="loading">Loading appointments...</div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- CONSULTATIONS -->
+
+    <section class="section">
+
+      <div class="section-header">
+        <h2>🩺 My Consultations</h2>
+        <button class="refresh-btn" onclick="loadConsultations()">Refresh</button>
+      </div>
+
+      <div id="consultationsContainer" class="card-list">
+        <div class="loading">Loading consultations...</div>
+      </div>
+
+    </section>
+
+    <!-- PRESCRIPTIONS -->
+
+    <section class="section">
+
+      <div class="section-header">
+        <h2>💊 My Prescriptions</h2>
+        <button class="refresh-btn" onclick="loadPrescriptions()">Refresh</button>
+      </div>
+
+      <div id="prescriptionsContainer" class="card-list">
+        <div class="loading">Loading prescriptions...</div>
+      </div>
+
+    </section>
+
+    <!-- HEALTH PROFILE -->
+
+    <section class="section">
+
+      <div class="section-header">
+        <h2>❤️ Health Profile</h2>
+        <button class="refresh-btn" onclick="loadHealthProfile()">Refresh</button>
+      </div>
+
+      <div id="healthProfileContainer">
+        <div class="loading">Loading health profile...</div>
+      </div>
+
+    </section>
+
+    <!-- REFERRALS -->
+
+    <section class="section">
+
+      <div class="section-header">
+        <h2>🔄 My Referrals</h2>
+        <button class="refresh-btn" onclick="loadReferrals()">Refresh</button>
+      </div>
+
+      <div id="referralsContainer" class="card-list">
+        <div class="loading">Loading referrals...</div>
+      </div>
+
+    </section>
+
+    <!-- FOLLOW UPS -->
+
+    <section class="section">
+
+      <div class="section-header">
+        <h2>📌 Follow-ups</h2>
+        <button class="refresh-btn" onclick="loadFollowUps()">Refresh</button>
+      </div>
+
+      <div id="followUpsContainer" class="card-list">
+        <div class="loading">Loading follow-ups...</div>
+      </div>
+
+    </section>
+
+    <!-- BOOK APPOINTMENT -->
+
+    <section class="section">
+
+      <div class="section-header">
+        <h2>➕ Book Appointment</h2>
+      </div>
+
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label for="facilityId">Facility ID *</label>
+
+          <input
+            type="text"
+            id="facilityId"
+            placeholder="Enter facility UUID"
+            autocomplete="off"
+          >
+
+          <div class="helper-text">
+            Enter the UUID of the PHC / hospital.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="doctorId">Doctor ID</label>
+
+          <input
+            type="text"
+            id="doctorId"
+            placeholder="Optional doctor UUID"
+            autocomplete="off"
+          >
+
+          <div class="helper-text">
+            Leave empty if you don't want a specific doctor.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="department">Department *</label>
+
+          <input
+            type="text"
+            id="department"
+            placeholder="General Medicine"
+            autocomplete="off"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="priority">Priority</label>
+
+          <select id="priority">
+            <option value="normal">Normal</option>
+            <option value="low">Low</option>
+            <option value="high">High</option>
+            <option value="critical">Critical</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="appointmentDate">Appointment Date *</label>
+
+          <input
+            type="date"
+            id="appointmentDate"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="appointmentTime">Appointment Time</label>
+
+          <input
+            type="time"
+            id="appointmentTime"
+          >
+        </div>
+
+      </div>
+
+      <div class="booking-note">
+        💡 Please select a future date. Facility ID and department are required.
+      </div>
+
+      <div class="action-row">
+
+        <button
+          type="button"
+          class="primary-btn"
+          id="bookAppointmentBtn"
+          onclick="bookAppointment()"
+        >
+          📅 Book Appointment
+        </button>
+
+      </div>
+
+    </section>
+
+  </div>
+
+  <script>
+
+    const API_BASE = "http://localhost:4000";
+    const TOKEN_KEY = "gramarogya_token";
+
+    let dashboardData = null;
+
+    /* =========================
+       TOKEN
+    ========================= */
+
+    function getToken() {
+      return localStorage.getItem(TOKEN_KEY);
+    }
+
+    /* =========================
+       MESSAGES
+    ========================= */
+
+    function showError(message) {
+
+      const box = document.getElementById("errorMessage");
+
+      box.textContent = message;
+      box.style.display = "block";
+
+      document.getElementById("successMessage").style.display = "none";
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    }
+
+    function showSuccess(message) {
+
+      const box = document.getElementById("successMessage");
+
+      box.textContent = message;
+      box.style.display = "block";
+
+      document.getElementById("errorMessage").style.display = "none";
+
+      setTimeout(() => {
+        box.style.display = "none";
+      }, 3500);
+    }
+
+    /* =========================
+       API REQUEST
+    ========================= */
+
+    async function apiRequest(url, options = {}) {
+
+      const token = getToken();
+
+      if (!token) {
+        throw new Error("Authentication token not found. Please login again.");
+      }
+
+      const headers = {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+        ...(options.headers || {})
+      };
+
+      const response = await fetch(`${API_BASE}${url}`, {
+        ...options,
+        headers
+      });
+
+      let data;
+
+      try {
+        data = await response.json();
+      } catch {
+        throw new Error("Invalid server response.");
+      }
+
+      if (response.status === 401) {
+
+        localStorage.removeItem(TOKEN_KEY);
+
+        window.location.href = "gramarogya_login.html";
+
+        throw new Error("Session expired. Please login again.");
+      }
+
+      if (response.status === 403) {
+        throw new Error("You do not have permission to access this resource.");
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          data.message ||
+          data.error ||
+          "Request failed."
+        );
+      }
+
+      return data;
+    }
+
+    /* =========================
+       HTML ESCAPE
+    ========================= */
+
+    function escapeHtml(value) {
+
+      if (value === null || value === undefined) {
+        return "";
+      }
+
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    /* =========================
+       DATE FORMAT
+    ========================= */
+
+    function formatDate(value) {
+
+      if (!value) {
+        return "N/A";
+      }
+
+      const date = new Date(value);
+
+      if (Number.isNaN(date.getTime())) {
+        return escapeHtml(value);
+      }
+
+      return date.toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+      });
+    }
+
+    function formatDateTime(value) {
+
+      if (!value) {
+        return "N/A";
+      }
+
+      const date = new Date(value);
+
+      if (Number.isNaN(date.getTime())) {
+        return escapeHtml(value);
+      }
+
+      return date.toLocaleString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+    /* =========================
+       STATUS
+    ========================= */
+
+    function formatStatus(status) {
+
+      if (!status) {
+        return "N/A";
+      }
+
+      return String(status)
+        .replaceAll("_", " ")
+        .replace(/\b\w/g, char => char.toUpperCase());
+    }
+
+    function statusBadge(status) {
+
+      return `
+        <span class="status ${escapeHtml(status || "")}">
+          ${escapeHtml(formatStatus(status))}
+        </span>
+      `;
+    }
+
+    /* =========================
+       JSON FORMATTER
+    ========================= */
+
+    function formatJsonValue(value) {
+
+      if (
+        value === null ||
+        value === undefined ||
+        value === ""
+      ) {
+        return "N/A";
+      }
+
+      if (Array.isArray(value)) {
+
+        if (value.length === 0) {
+          return "None";
+        }
+
+        return value
+          .map(item => {
+
+            if (typeof item === "object") {
+              return JSON.stringify(item);
+            }
+
+            return String(item);
+
+          })
+          .join(", ");
+      }
+
+      if (typeof value === "object") {
+        return JSON.stringify(value);
+      }
+
+      return String(value);
+    }
+
+    /* =========================
+       PROFILE
+    ========================= */
+
+    async function loadProfile() {
+
+      const container =
+        document.getElementById("profileContainer");
+
+      try {
+
+        const data =
+          await apiRequest("/api/patient/profile");
+
+        const patient =
+          data.patient;
+
+        document.getElementById("navPatientName").textContent =
+          patient.full_name || "Patient";
+
+        document.getElementById("welcomeName").textContent =
+          `Welcome, ${patient.full_name || "Patient"} 👋`;
+
+        container.innerHTML = `
+
+          <div class="info-box">
+            <label>Full Name</label>
+            <strong>
+              ${escapeHtml(patient.full_name)}
+            </strong>
+          </div>
+
+          <div class="info-box">
+            <label>Email</label>
+            <strong>
+              ${escapeHtml(patient.email)}
+            </strong>
+          </div>
+
+          <div class="info-box">
+            <label>Phone</label>
+            <strong>
+              ${escapeHtml(patient.phone_number || "N/A")}
+            </strong>
+          </div>
+
+          <div class="info-box">
+            <label>Preferred Language</label>
+            <strong>
+              ${escapeHtml(patient.preferred_language || "N/A")}
+            </strong>
+          </div>
+
+          <div class="info-box">
+            <label>Phone Verification</label>
+            <strong>
+              ${patient.is_phone_verified
+                ? "Verified"
+                : "Not Verified"}
+            </strong>
+          </div>
+
+          <div class="info-box">
+            <label>Email Verification</label>
+            <strong>
+              ${patient.is_email_verified
+                ? "Verified"
+                : "Not Verified"}
+            </strong>
+          </div>
+
+        `;
+
+      } catch (error) {
+
+        container.innerHTML =
+          `<div class="empty">${escapeHtml(error.message)}</div>`;
+      }
+    }
+
+    /* =========================
+       DASHBOARD
+    ========================= */
+
+    async function loadDashboard() {
+
+      try {
+
+        const data =
+          await apiRequest("/api/patient/dashboard");
+
+        dashboardData = data;
+
+        const patient =
+          data.patient;
+
+        document.getElementById("navPatientName").textContent =
+          patient.full_name || "Patient";
+
+        document.getElementById("welcomeName").textContent =
+          `Welcome, ${patient.full_name || "Patient"} 👋`;
+
+        document.getElementById("appointmentCount").textContent =
+          data.summary?.upcoming_appointments ?? 0;
+
+        document.getElementById("consultationCount").textContent =
+          data.summary?.recent_consultations ?? 0;
+
+      } catch (error) {
+
+        showError(error.message);
+      }
+    }
+
+    /* =========================
+       APPOINTMENTS
+    ========================= */
+
+    async function loadAppointments() {
+
+      const container =
+        document.getElementById("appointmentsContainer");
+
+      try {
+
+        const data =
+          await apiRequest("/api/appointments/my");
+
+        const appointments =
+          data.appointments || [];
+
+        const activeAppointments =
+          appointments.filter(
+            appointment =>
+              appointment.status !== "cancelled"
+          );
+
+        document.getElementById("appointmentCount").textContent =
+          activeAppointments.length;
+
+        if (appointments.length === 0) {
+
+          container.innerHTML =
+            `<div class="empty">No appointments found.</div>`;
+
+          return;
+        }
+
+        let html = `
+
+          <table>
+
+            <thead>
+
+              <tr>
+                <th>Appointment</th>
+                <th>Department</th>
+                <th>Priority</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+
+            </thead>
+
+            <tbody>
+
+        `;
+
+        appointments.forEach(appointment => {
+
+          const canCancel =
+            appointment.status === "booked" ||
+            appointment.status === "confirmed";
+
+          html += `
+
+            <tr>
+
+              <td>
+                ${escapeHtml(appointment.id)}
+              </td>
+
+              <td>
+                ${escapeHtml(
+                  appointment.department || "N/A"
+                )}
+              </td>
+
+              <td>
+                ${escapeHtml(
+                  appointment.priority || "normal"
+                )}
+              </td>
+
+              <td>
+                ${formatDate(
+                  appointment.scheduled_date
+                )}
+              </td>
+
+              <td>
+                ${escapeHtml(
+                  appointment.scheduled_time || "N/A"
+                )}
+              </td>
+
+              <td>
+                ${statusBadge(appointment.status)}
+              </td>
+
+              <td>
+
+                ${
+                  canCancel
+                    ? `
+                      <button
+                        class="danger-btn"
+                        onclick="cancelAppointment('${appointment.id}')"
+                      >
+                        Cancel
+                      </button>
+                    `
+                    : "-"
+                }
+
+              </td>
+
+            </tr>
+
+          `;
+        });
+
+        html += `
+
+            </tbody>
+
+          </table>
+
+        `;
+
+        container.innerHTML = html;
+
+      } catch (error) {
+
+        container.innerHTML =
+          `<div class="empty">${escapeHtml(error.message)}</div>`;
+      }
+    }
+
+    /* =========================
+       CANCEL APPOINTMENT
+    ========================= */
+
+    async function cancelAppointment(appointmentId) {
+
+      const confirmed =
+        confirm(
+          "Are you sure you want to cancel this appointment?"
+        );
+
+      if (!confirmed) {
+        return;
+      }
+
+      try {
+
+        await apiRequest(
+          `/api/appointments/${appointmentId}/cancel`,
+          {
+            method: "PATCH"
+          }
+        );
+
+        showSuccess(
+          "Appointment cancelled successfully."
+        );
+
+        await Promise.all([
+          loadAppointments(),
+          loadDashboard()
+        ]);
+
+      } catch (error) {
+
+        showError(error.message);
+      }
+    }
+
+    /* =========================
+       BOOK APPOINTMENT
+    ========================= */
+
+    async function bookAppointment() {
+
+      const button =
+        document.getElementById("bookAppointmentBtn");
+
+      const facility_id =
+        document
+          .getElementById("facilityId")
+          .value
+          .trim();
+
+      const doctor_id =
+        document
+          .getElementById("doctorId")
+          .value
+          .trim();
+
+      const department =
+        document
+          .getElementById("department")
+          .value
+          .trim();
+
+      const priority =
+        document
+          .getElementById("priority")
+          .value;
+
+      const scheduled_date =
+        document
+          .getElementById("appointmentDate")
+          .value;
+
+      const scheduled_time =
+        document
+          .getElementById("appointmentTime")
+          .value;
+
+      /* VALIDATION */
+
+      if (!facility_id) {
+
+        showError(
+          "Please enter the Facility ID."
+        );
+
+        return;
+      }
+
+      if (!department) {
+
+        showError(
+          "Please enter the department."
+        );
+
+        return;
+      }
+
+      if (!scheduled_date) {
+
+        showError(
+          "Please select the appointment date."
+        );
+
+        return;
+      }
+
+      /* DATE VALIDATION */
+
+      const today =
+        new Date();
+
+      today.setHours(
+        0,
+        0,
+        0,
+        0
+      );
+
+      const selectedDate =
+        new Date(
+          scheduled_date + "T00:00:00"
+        );
+
+      if (selectedDate < today) {
+
+        showError(
+          "Appointment date cannot be in the past."
+        );
+
+        return;
+      }
+
+      try {
+
+        button.disabled = true;
+        button.textContent = "Booking...";
+
+        const payload = {
+
+          facility_id:
+            facility_id,
+
+          doctor_id:
+            doctor_id || null,
+
+          department:
+            department,
+
+          priority:
+            priority,
+
+          scheduled_date:
+            scheduled_date,
+
+          scheduled_time:
+            scheduled_time || null
+        };
+
+        console.log(
+          "Booking appointment:",
+          payload
+        );
+
+        const data =
+          await apiRequest(
+            "/api/appointments/book",
+            {
+              method: "POST",
+
+              body:
+                JSON.stringify(payload)
+            }
+          );
+
+        console.log(
+          "Booking response:",
+          data
+        );
+
+        showSuccess(
+          data.message ||
+          "Appointment booked successfully."
+        );
+
+        /* CLEAR FORM */
+
+        document.getElementById(
+          "facilityId"
+        ).value = "";
+
+        document.getElementById(
+          "doctorId"
+        ).value = "";
+
+        document.getElementById(
+          "department"
+        ).value = "";
+
+        document.getElementById(
+          "priority"
+        ).value = "normal";
+
+        document.getElementById(
+          "appointmentDate"
+        ).value = "";
+
+        document.getElementById(
+          "appointmentTime"
+        ).value = "";
+
+        /* REFRESH */
+
+        await Promise.all([
+          loadAppointments(),
+          loadDashboard()
+        ]);
+
+        document
+          .getElementById(
+            "appointmentsContainer"
+          )
+          .scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+          });
+
+      } catch (error) {
+
+        console.error(
+          "Book appointment error:",
+          error
+        );
+
+        showError(
+          error.message ||
+          "Unable to book appointment."
+        );
+
+      } finally {
+
+        button.disabled = false;
+
+        button.textContent =
+          "📅 Book Appointment";
+      }
+    }
+
+    /* =========================
+       CONSULTATIONS
+    ========================= */
+
+    async function loadConsultations() {
+
+      const container =
+        document.getElementById(
+          "consultationsContainer"
+        );
+
+      try {
+
+        const data =
+          await apiRequest(
+            "/api/consultations/my"
+          );
+
+        const consultations =
+          data.consultations || [];
+
+        if (consultations.length === 0) {
+
+          container.innerHTML =
+            `<div class="empty">No consultations found.</div>`;
+
+          return;
+        }
+
+        let html = "";
+
+        consultations.forEach(
+          consultation => {
+
+            html += `
+
+              <div class="item-card">
+
+                <h3>
+                  ${escapeHtml(
+                    consultation.doctor_name ||
+                    "Doctor not assigned"
+                  )}
+                </h3>
+
+                <p>
+                  <strong>Facility:</strong>
+                  ${escapeHtml(
+                    consultation.facility_name ||
+                    "N/A"
+                  )}
+                </p>
+
+                <p>
+                  <strong>Mode:</strong>
+                  ${escapeHtml(
+                    formatStatus(
+                      consultation.mode
+                    )
+                  )}
+                </p>
+
+                <p>
+                  <strong>Status:</strong>
+                  ${statusBadge(
+                    consultation.status
+                  )}
+                </p>
+
+                <p>
+                  <strong>Symptoms:</strong>
+                  ${escapeHtml(
+                    formatJsonValue(
+                      consultation.symptoms
+                    )
+                  )}
+                </p>
+
+                <p>
+                  <strong>Diagnosis:</strong>
+                  ${escapeHtml(
+                    consultation.diagnosis ||
+                    "Not available"
+                  )}
+                </p>
+
+                <p>
+                  <strong>Treatment:</strong>
+                  ${escapeHtml(
+                    consultation.treatment_instructions ||
+                    "Not available"
+                  )}
+                </p>
+
+                <p>
+                  <strong>Created:</strong>
+                  ${formatDateTime(
+                    consultation.created_at
+                  )}
+                </p>
+
+              </div>
+
+            `;
+          }
+        );
+
+        container.innerHTML =
+          html;
+
+      } catch (error) {
+
+        container.innerHTML =
+          `<div class="empty">${escapeHtml(error.message)}</div>`;
+      }
+    }
+
+    /* =========================
+       PRESCRIPTIONS
+    ========================= */
+
+    async function loadPrescriptions() {
+
+      const container =
+        document.getElementById(
+          "prescriptionsContainer"
+        );
+
+      try {
+
+        const data =
+          await apiRequest(
+            "/api/prescriptions/my"
+          );
+
+        const prescriptions =
+          data.prescriptions || [];
+
+        document.getElementById(
+          "prescriptionCount"
+        ).textContent =
+          prescriptions.length;
+
+        if (prescriptions.length === 0) {
+
+          container.innerHTML =
+            `<div class="empty">No prescriptions found.</div>`;
+
+          return;
+        }
+
+        let html = "";
+
+        prescriptions.forEach(
+          prescription => {
+
+            let medicinesHtml = "";
+
+            if (
+              Array.isArray(
+                prescription.medicines
+              ) &&
+              prescription.medicines.length > 0
+            ) {
+
+              medicinesHtml = `
+
+                <ul class="medicine-list">
+
+                  ${
+                    prescription.medicines
+                      .map(
+                        medicine => `
+
+                          <li>
+
+                            <strong>
+                              ${escapeHtml(
+                                medicine.medicine_name
+                              )}
+                            </strong>
+
+                            ${
+                              medicine.dosage
+                                ? ` - ${escapeHtml(
+                                    medicine.dosage
+                                  )}`
+                                : ""
+                            }
+
+                            ${
+                              medicine.frequency
+                                ? `, ${escapeHtml(
+                                    medicine.frequency
+                                  )}`
+                                : ""
+                            }
+
+                            ${
+                              medicine.duration
+                                ? `, ${escapeHtml(
+                                    medicine.duration
+                                  )}`
+                                : ""
+                            }
+
+                            ${
+                              medicine.instructions
+                                ? `<br><small>${escapeHtml(
+                                    medicine.instructions
+                                  )}</small>`
+                                : ""
+                            }
+
+                          </li>
+
+                        `
+                      )
+                      .join("")
+                  }
+
+                </ul>
+
+              `;
+
+            } else {
+
+              medicinesHtml =
+                `<p>No medicine details available.</p>`;
+            }
+
+            html += `
+
+              <div class="item-card">
+
+                <h3>
+                  Prescription
+                </h3>
+
+                <p>
+                  <strong>Doctor:</strong>
+                  ${escapeHtml(
+                    prescription.doctor_name ||
+                    "N/A"
+                  )}
+                </p>
+
+                <p>
+                  <strong>Date:</strong>
+                  ${formatDateTime(
+                    prescription.created_at
+                  )}
+                </p>
+
+                <p>
+                  <strong>Advice:</strong>
+                  ${escapeHtml(
+                    prescription.additional_advice ||
+                    "No additional advice"
+                  )}
+                </p>
+
+                <p>
+                  <strong>Medicines:</strong>
+                </p>
+
+                ${medicinesHtml}
+
+              </div>
+
+            `;
+          }
+        );
+
+        container.innerHTML =
+          html;
+
+      } catch (error) {
+
+        container.innerHTML =
+          `<div class="empty">${escapeHtml(error.message)}</div>`;
+      }
+    }
+
+    /* =========================
+       HEALTH PROFILE
+    ========================= */
+
+    async function loadHealthProfile() {
+
+      const container =
+        document.getElementById(
+          "healthProfileContainer"
+        );
+
+      try {
+
+        const data =
+          await apiRequest(
+            "/api/health-profile"
+          );
+
+        const profile =
+          data.data;
+
+        const riskClass =
+          profile.current_risk_status === "high" ||
+          profile.is_high_risk
+            ? "risk-high"
+            : "risk-normal";
+
+        container.innerHTML = `
+
+          <div class="health-grid">
+
+            <div class="health-box">
+
+              <h4>Patient</h4>
+
+              <p>
+                ${escapeHtml(
+                  profile.patient_name
+                )}
+              </p>
+
+              <p>
+                ID:
+                ${escapeHtml(
+                  profile.patient_ref_code
+                )}
+              </p>
+
+            </div>
+
+            <div class="health-box">
+
+              <h4>Blood Group</h4>
+
+              <p>
+                ${escapeHtml(
+                  profile.blood_group ||
+                  "N/A"
+                )}
+              </p>
+
+            </div>
+
+            <div class="health-box">
+
+              <h4>Existing Conditions</h4>
+
+              <p>
+                ${escapeHtml(
+                  formatJsonValue(
+                    profile.existing_conditions
+                  )
+                )}
+              </p>
+
+            </div>
+
+            <div class="health-box">
+
+              <h4>Allergies</h4>
+
+              <p>
+                ${escapeHtml(
+                  formatJsonValue(
+                    profile.allergies
+                  )
+                )}
+              </p>
+
+            </div>
+
+            <div class="health-box">
+
+              <h4>Chronic Conditions</h4>
+
+              <p>
+                ${escapeHtml(
+                  formatJsonValue(
+                    profile.chronic_conditions
+                  )
+                )}
+              </p>
+
+            </div>
+
+            <div class="health-box">
+
+              <h4>Risk Status</h4>
+
+              <p class="${riskClass}">
+
+                ${
+                  profile.current_risk_status
+                    ? escapeHtml(
+                        formatStatus(
+                          profile.current_risk_status
+                        )
+                      )
+                    : "Not assessed"
+                }
+
+              </p>
+
+            </div>
+
+            <div class="health-box">
+
+              <h4>Risk Categories</h4>
+
+              <p>
+                ${escapeHtml(
+                  formatJsonValue(
+                    profile.risk_categories
+                  )
+                )}
+              </p>
+
+            </div>
+
+            <div class="health-box">
+
+              <h4>Notes</h4>
+
+              <p>
+                ${escapeHtml(
+                  profile.notes ||
+                  "No notes available"
+                )}
+              </p>
+
+            </div>
+
+          </div>
+
+        `;
+
+      } catch (error) {
+
+        container.innerHTML =
+          `<div class="empty">${escapeHtml(error.message)}</div>`;
+      }
+    }
+
+    /* =========================
+       REFERRALS
+    ========================= */
+
+    async function loadReferrals() {
+
+      const container =
+        document.getElementById(
+          "referralsContainer"
+        );
+
+      try {
+
+        const data =
+          await apiRequest(
+            "/api/referrals/my"
+          );
+
+        const referrals =
+          data.data || [];
+
+        if (referrals.length === 0) {
+
+          container.innerHTML =
+            `<div class="empty">No referrals found.</div>`;
+
+          return;
+        }
+
+        let html = "";
+
+        referrals.forEach(
+          referral => {
+
+            html += `
+
+              <div class="item-card">
+
+                <h3>
+                  ${escapeHtml(
+                    referral.required_department ||
+                    "Specialist Referral"
+                  )}
+                </h3>
+
+                <p>
+                  <strong>Referring Facility:</strong>
+                  ${escapeHtml(
+                    referral.referring_facility_name ||
+                    "N/A"
+                  )}
+                </p>
+
+                <p>
+                  <strong>Receiving Facility:</strong>
+                  ${escapeHtml(
+                    referral.receiving_facility_name ||
+                    "N/A"
+                  )}
+                </p>
+
+                <p>
+                  <strong>Reason:</strong>
+                  ${escapeHtml(
+                    referral.reason ||
+                    "N/A"
+                  )}
+                </p>
+
+                <p>
+                  <strong>Priority:</strong>
+                  ${escapeHtml(
+                    referral.priority ||
+                    "normal"
+                  )}
+                </p>
+
+                <p>
+                  <strong>Status:</strong>
+                  ${statusBadge(
+                    referral.status
+                  )}
+                </p>
+
+                <p>
+                  <strong>Created:</strong>
+                  ${formatDateTime(
+                    referral.created_at
+                  )}
+                </p>
+
+                ${
+                  referral.notes
+                    ? `
+                      <p>
+                        <strong>Notes:</strong>
+                        ${escapeHtml(
+                          referral.notes
+                        )}
+                      </p>
+                    `
+                    : ""
+                }
+
+              </div>
+
+            `;
+          }
+        );
+
+        container.innerHTML =
+          html;
+
+      } catch (error) {
+
+        container.innerHTML =
+          `<div class="empty">${escapeHtml(error.message)}</div>`;
+      }
+    }
+
+    /* =========================
+       FOLLOW UPS
+    ========================= */
+
+    async function loadFollowUps() {
+
+      const container =
+        document.getElementById(
+          "followUpsContainer"
+        );
+
+      try {
+
+        const data =
+          await apiRequest(
+            "/api/follow-ups/my"
+          );
+
+        const followUps =
+          data.data || [];
+
+        document.getElementById(
+          "followUpCount"
+        ).textContent =
+          followUps.filter(
+            item =>
+              item.status !== "completed"
+          ).length;
+
+        if (followUps.length === 0) {
+
+          container.innerHTML =
+            `<div class="empty">No follow-ups found.</div>`;
+
+          return;
+        }
+
+        let html = "";
+
+        followUps.forEach(
+          followUp => {
+
+            const isCompleted =
+              followUp.status === "completed";
+
+            html += `
+
+              <div class="item-card">
+
+                <h3>
+                  ${escapeHtml(
+                    followUp.reason ||
+                    "Follow-up"
+                  )}
+                </h3>
+
+                <p>
+                  <strong>Date:</strong>
+                  ${formatDate(
+                    followUp.follow_up_date
+                  )}
+                </p>
+
+                <p>
+                  <strong>Risk Category:</strong>
+                  ${escapeHtml(
+                    followUp.risk_category ||
+                    "N/A"
+                  )}
+                </p>
+
+                <p>
+                  <strong>Assigned To:</strong>
+                  ${escapeHtml(
+                    followUp.assigned_to_name ||
+                    "Not assigned"
+                  )}
+                </p>
+
+                <p>
+                  <strong>Status:</strong>
+                  ${statusBadge(
+                    followUp.status
+                  )}
+                </p>
+
+                ${
+                  !isCompleted
+                    ? `
+                      <div class="action-row">
+
+                        <button
+                          class="primary-btn"
+                          onclick="completeFollowUp('${followUp.id}')"
+                        >
+                          Mark Completed
+                        </button>
+
+                      </div>
+                    `
+                    : ""
+                }
+
+              </div>
+
+            `;
+          }
+        );
+
+        container.innerHTML =
+          html;
+
+      } catch (error) {
+
+        container.innerHTML =
+          `<div class="empty">${escapeHtml(error.message)}</div>`;
+      }
+    }
+
+    /* =========================
+       COMPLETE FOLLOW UP
+    ========================= */
+
+    async function completeFollowUp(
+      followUpId
+    ) {
+
+      const confirmed =
+        confirm(
+          "Mark this follow-up as completed?"
+        );
+
+      if (!confirmed) {
+        return;
+      }
+
+      try {
+
+        await apiRequest(
+          `/api/follow-ups/${followUpId}/complete`,
+          {
+            method: "PATCH"
+          }
+        );
+
+        showSuccess(
+          "Follow-up completed successfully."
+        );
+
+        await loadFollowUps();
+
+      } catch (error) {
+
+        showError(
+          error.message
+        );
+      }
+    }
+
+    /* =========================
+       LOGOUT
+    ========================= */
+
+    function logout() {
+
+      localStorage.removeItem(
+        TOKEN_KEY
+      );
+
+      window.location.href =
+        "gramarogya_login.html";
+    }
+
+    /* =========================
+       INITIAL LOAD
+    ========================= */
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      async () => {
+
+        const token =
+          getToken();
+
+        if (!token) {
+
+          window.location.href =
+            "gramarogya_login.html";
+
+          return;
+        }
+
+        /*
+          Set minimum date for appointment.
+        */
+
+        const dateInput =
+          document.getElementById(
+            "appointmentDate"
+          );
+
+        const now =
+          new Date();
+
+        const year =
+          now.getFullYear();
+
+        const month =
+          String(
+            now.getMonth() + 1
+          ).padStart(2, "0");
+
+        const day =
+          String(
+            now.getDate()
+          ).padStart(2, "0");
+
+        dateInput.min =
+          `${year}-${month}-${day}`;
+
+        await Promise.all([
+
+          loadDashboard(),
+
+          loadProfile(),
+
+          loadAppointments(),
+
+          loadConsultations(),
+
+          loadPrescriptions(),
+
+          loadHealthProfile(),
+
+          loadReferrals(),
+
+          loadFollowUps()
+
+        ]);
+
+      }
+    );
+
+  </script>
+
+</body>
+</html>

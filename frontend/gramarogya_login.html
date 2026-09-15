@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GramArogya — Login</title>
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Hind:wght@400;500;600;700&display=swap');
+
+:root {
+--teal-900: #0F3B34;
+--teal-700: #14584D;
+--teal-600: #1B6E60;
+--marigold-500: #E8A33D;
+--cream-50: #FBF8F2;
+--cream-100: #F3EDE0;
+--charcoal-900: #25231F;
+--charcoal-600: #5B564C;
+--line: #E2DACB;
+--radius: 10px;
+}
+
+* {
+  box-sizing: border-box;
+  }
+
+html,
+body {
+margin: 0;
+padding: 0;
+}
+
+body {
+font-family: 'Hind', sans-serif;
+background: var(--cream-50);
+color: var(--charcoal-900);
+min-height: 100vh;
+display: flex;
+}
+
+.brand-panel {
+flex: 1 1 46%;
+background: var(--teal-900);
+color: var(--cream-50);
+position: relative;
+padding: 56px;
+display: flex;
+flex-direction: column;
+justify-content: space-between;
+overflow: hidden;
+min-height: 100vh;
+}
+
+.brand-mark {
+display: flex;
+align-items: center;
+gap: 10px;
+font-family: 'Source Serif 4', serif;
+font-size: 22px;
+font-weight: 600;
+}
+
+.brand-mark svg {
+flex-shrink: 0;
+}
+
+.brand-copy {
+position: relative;
+z-index: 2;
+max-width: 440px;
+}
+
+.brand-copy h1 {
+font-family: 'Source Serif 4', serif;
+font-weight: 600;
+font-size: 40px;
+line-height: 1.22;
+margin: 0 0 18px;
+color: #FDFBF6;
+}
+
+.brand-copy p {
+font-size: 17px;
+line-height: 1.6;
+color: #CFE3DD;
+margin: 0;
+max-width: 380px;
+}
+
+.terrain {
+position: absolute;
+left: 0;
+right: 0;
+bottom: 0;
+z-index: 1;
+opacity: 0.9;
+}
+
+.brand-foot {
+position: relative;
+z-index: 2;
+display: flex;
+gap: 28px;
+font-size: 13.5px;
+color: #9FC3B9;
+border-top: 1px solid rgba(255,255,255,0.14);
+padding-top: 18px;
+}
+
+.brand-foot strong {
+color: #E9DCC2;
+font-weight: 600;
+}
+
+.auth-panel {
+flex: 1 1 54%;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+padding: 48px 32px;
+}
+
+.lang-switch {
+align-self: flex-end;
+margin: 0 0 28px;
+display: flex;
+gap: 4px;
+background: var(--cream-100);
+border: 1px solid var(--line);
+border-radius: 999px;
+padding: 4px;
+}
+
+.lang-switch button {
+border: none;
+background: transparent;
+padding: 6px 14px;
+border-radius: 999px;
+font-family: 'Hind', sans-serif;
+font-size: 13.5px;
+font-weight: 600;
+color: var(--charcoal-600);
+cursor: pointer;
+}
+
+.lang-switch button.active {
+background: var(--teal-900);
+color: #fff;
+}
+
+.card {
+width: 100%;
+max-width: 400px;
+}
+
+.card h2 {
+font-family: 'Source Serif 4', serif;
+font-weight: 600;
+font-size: 26px;
+margin: 0 0 6px;
+}
+
+.card .sub {
+color: var(--charcoal-600);
+font-size: 15px;
+margin: 0 0 28px;
+line-height: 1.5;
+}
+
+.role-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 10px;
+margin-bottom: 26px;
+}
+
+.role-card {
+border: 1.5px solid var(--line);
+background: #fff;
+border-radius: var(--radius);
+padding: 13px 12px;
+cursor: pointer;
+display: flex;
+flex-direction: column;
+gap: 6px;
+transition: border-color .15s ease, background .15s ease;
+}
+
+.role-card:hover {
+border-color: var(--marigold-500);
+}
+
+.role-card.selected {
+border-color: var(--teal-700);
+background: #F1F6F4;
+}
+
+.role-card .icon {
+font-size: 18px;
+}
+
+.role-card .label {
+font-size: 13.5px;
+font-weight: 600;
+color: var(--charcoal-900);
+}
+
+label {
+display: block;
+font-size: 13px;
+font-weight: 600;
+color: var(--charcoal-600);
+margin-bottom: 7px;
+}
+
+.input-box {
+width: 100%;
+border: 1.5px solid var(--line);
+border-radius: var(--radius);
+padding: 12px 14px;
+font-size: 15.5px;
+font-family: 'Hind', sans-serif;
+outline: none;
+background: #fff;
+color: var(--charcoal-900);
+margin-bottom: 18px;
+}
+
+.input-box:focus {
+border-color: var(--teal-700);
+}
+
+.phone-row {
+display: flex;
+border: 1.5px solid var(--line);
+border-radius: var(--radius);
+overflow: hidden;
+margin-bottom: 18px;
+background: #fff;
+}
+
+.phone-row .cc {
+padding: 12px;
+background: var(--cream-100);
+font-size: 15px;
+color: var(--charcoal-600);
+border-right: 1.5px solid var(--line);
+font-weight: 600;
+}
+
+.phone-row input {
+flex: 1;
+border: none;
+padding: 12px 14px;
+font-size: 15.5px;
+font-family: 'Hind', sans-serif;
+outline: none;
+background: transparent;
+color: var(--charcoal-900);
+}
+
+.btn-primary {
+width: 100%;
+background: var(--teal-900);
+color: #fff;
+border: none;
+border-radius: var(--radius);
+padding: 14px;
+font-size: 15.5px;
+font-weight: 600;
+font-family: 'Hind', sans-serif;
+cursor: pointer;
+transition: background .15s ease;
+}
+
+.btn-primary:hover {
+background: var(--teal-700);
+}
+
+.btn-primary:disabled {
+background: #C9C2B3;
+cursor: not-allowed;
+}
+
+.btn-secondary {
+width: 100%;
+background: #fff;
+color: var(--teal-900);
+border: 1.5px solid var(--line);
+border-radius: var(--radius);
+padding: 13px;
+font-size: 15px;
+font-weight: 600;
+font-family: 'Hind', sans-serif;
+cursor: pointer;
+}
+
+.btn-secondary:hover {
+border-color: var(--teal-700);
+}
+
+.divider {
+display: flex;
+align-items: center;
+gap: 12px;
+margin: 22px 0;
+color: var(--charcoal-600);
+font-size: 12.5px;
+}
+
+.divider::before,
+.divider::after {
+content: "";
+flex: 1;
+height: 1px;
+background: var(--line);
+}
+
+.step-back {
+background: none;
+border: none;
+color: var(--charcoal-600);
+font-size: 13.5px;
+cursor: pointer;
+padding: 0;
+margin-bottom: 18px;
+display: flex;
+align-items: center;
+gap: 6px;
+}
+
+.message {
+display: none;
+padding: 11px 13px;
+border-radius: 8px;
+margin-bottom: 18px;
+font-size: 13.5px;
+line-height: 1.4;
+}
+
+.message.error {
+display: block;
+background: #FBEDEA;
+color: #9D3D25;
+border: 1px solid #E9B8AA;
+}
+
+.message.success {
+display: block;
+background: #EAF5EF;
+color: #24633D;
+border: 1px solid #B8D8C2;
+}
+
+.link-row {
+text-align: center;
+font-size: 13.5px;
+color: var(--charcoal-600);
+margin-top: 22px;
+}
+
+.hidden {
+display: none !important;
+}
+
+.otp-container {
+display: flex;
+gap: 8px;
+margin-bottom: 18px;
+}
+
+.otp-input {
+width: 44px;
+height: 52px;
+text-align: center;
+font-size: 20px;
+border: 1.5px solid var(--line);
+border-radius: 8px;
+outline: none;
+}
+
+.otp-input:focus {
+border-color: var(--teal-700);
+}
+
+@media (max-width: 860px) {
+
+```
+body {
+    flex-direction: column;
+}
+
+.brand-panel {
+    min-height: 280px;
+    padding: 36px 28px;
+}
+
+.brand-copy h1 {
+    font-size: 28px;
+}
+
+.auth-panel {
+    padding: 36px 22px;
+}
+```
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="brand-panel">
+
+<div class="brand-mark">
+
+```
+<svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+
+    <circle cx="13" cy="13" r="12" stroke="#E8A33D" stroke-width="1.6"/>
+
+    <path d="M13 7v12M7 13h12"
+          stroke="#E8A33D"
+          stroke-width="1.6"
+          stroke-linecap="round"/>
+
+</svg>
+
+<span>GramArogya</span>
+```
+
+</div>
+
+<div class="brand-copy">
+
+```
+<h1>Healthcare that reaches every village.</h1>
+
+<p>
+
+    One login connects patients, ASHA workers, doctors and health
+
+    facilities — even where the network doesn't always reach.
+
+</p>
+```
+
+</div>
+
+<svg class="terrain"
+  viewBox="0 0 640 160"
+  preserveAspectRatio="none"
+  height="150"
+  width="100%">
+
+```
+<path d="M0 120 C90 80,160 140,240 100 S380 60,460 100 S560 130,640 90 V160 H0 Z"
+      fill="#123F37"/>
+
+<path d="M0 140 C100 110,200 150,300 120 S460 100,640 130 V160 H0 Z"
+      fill="#0C332C"/>
+```
+
+</svg>
+
+<div class="brand-foot">
+
+```
+<span><strong>48</strong> facilities connected</span>
+
+<span><strong>3</strong> languages supported</span>
+
+<span>Works offline</span>
+```
+
+</div>
+
+</div>
+
+<div class="auth-panel">
+
+<div class="lang-switch">
+
+```
+<button data-lang="en" class="active">English</button>
+
+<button data-lang="hi">हिंदी</button>
+
+<button data-lang="mr">मराठी</button>
+```
+
+</div>
+
+<div class="card">
+
+```
+<div id="message" class="message"></div>
+
+<!-- STEP 1: ROLE -->
+
+<div id="step-role">
+
+    <h2>Who's signing in?</h2>
+
+    <p class="sub">
+
+        Select your role to continue to the right dashboard.
+
+    </p>
+
+    <div class="role-grid">
+
+        <div class="role-card" data-role="patient">
+
+            <span class="icon">🧑‍🤝‍🧑</span>
+
+            <span class="label">Patient</span>
+
+        </div>
+
+        <div class="role-card" data-role="frontline_worker">
+
+            <span class="icon">🩺</span>
+
+            <span class="label">ASHA / ANM Worker</span>
+
+        </div>
+
+        <div class="role-card" data-role="doctor">
+
+            <span class="icon">⚕️</span>
+
+            <span class="label">Doctor</span>
+
+        </div>
+
+        <div class="role-card" data-role="facility_staff">
+
+            <span class="icon">🏥</span>
+
+            <span class="label">Facility Staff</span>
+
+        </div>
+
+        <div class="role-card"
+             data-role="district_admin"
+             style="grid-column: 1 / -1;">
+
+            <span class="icon">📊</span>
+
+            <span class="label">District Administrator</span>
+
+        </div>
+
+    </div>
+
+    <button class="btn-primary"
+            id="continue-role"
+            disabled>
+
+        Continue
+
+    </button>
+
+</div>
+
+<!-- STEP 2: PHONE -->
+
+<div id="step-phone" class="hidden">
+
+    <button class="step-back" id="back-to-role">
+
+        ← Back
+
+    </button>
+
+    <h2>Enter your phone number</h2>
+
+    <p class="sub">
+
+        We'll send a one-time code to verify it's you.
+
+    </p>
+
+    <label>Mobile number</label>
+
+    <div class="phone-row">
+
+        <span class="cc">+91</span>
+
+        <input
+            type="tel"
+            id="phone-input"
+            maxlength="10"
+            placeholder="98765 43210"
+            inputmode="numeric"
+        >
+
+    </div>
+
+    <button class="btn-primary" id="send-otp">
+
+        Send OTP
+
+    </button>
+
+    <div class="divider">
+
+        <span>or</span>
+
+    </div>
+
+    <button class="btn-secondary" id="use-password">
+
+        Sign in with password instead
+
+    </button>
+
+</div>
+
+<!-- STEP 3: PASSWORD -->
+
+<div id="step-password" class="hidden">
+
+    <button class="step-back" id="back-password">
+
+        ← Back
+
+    </button>
+
+    <h2>Sign in with password</h2>
+
+    <p class="sub">
+
+        Enter your registered email and password to continue.
+
+    </p>
+
+    <label for="email-input">
+
+        Email address
+
+    </label>
+
+    <input
+        type="email"
+        id="email-input"
+        class="input-box"
+        placeholder="you@example.com"
+        autocomplete="email"
+    >
+
+    <label for="password-input">
+
+        Password
+
+    </label>
+
+    <input
+        type="password"
+        id="password-input"
+        class="input-box"
+        placeholder="Enter your password"
+        autocomplete="current-password"
+    >
+
+    <button class="btn-primary" id="password-login">
+
+        Sign In
+
+    </button>
+
+</div>
+
+<!-- STEP 4: OTP -->
+
+<div id="step-otp" class="hidden">
+
+    <button class="step-back" id="back-to-phone">
+
+        ← Back
+
+    </button>
+
+    <h2>Enter the 4-digit code</h2>
+
+    <p class="sub" id="otp-sub-text">
+
+        Sent to +91 XXXXX XXXXX
+
+    </p>
+
+    <div class="otp-container">
+
+        <input class="otp-input"
+               maxlength="1"
+               inputmode="numeric">
+
+        <input class="otp-input"
+               maxlength="1"
+               inputmode="numeric">
+
+        <input class="otp-input"
+               maxlength="1"
+               inputmode="numeric">
+
+        <input class="otp-input"
+               maxlength="1"
+               inputmode="numeric">
+
+    </div>
+
+    <button class="btn-primary" id="verify-otp">
+
+        Verify & Continue
+
+    </button>
+
+</div>
+
+<div class="link-row">
+
+    Need help? Ask your ASHA worker or call the GramArogya helpline.
+
+</div>
+```
+
+</div>
+
+</div>
+
+<script>
+
+const API_BASE_URL = "http://localhost:4000";
+
+let selectedRole = null;
+
+let enteredPhone = "";
+
+const dashboardMap = {
+
+    patient: "patient-dashboard.html",
+
+    frontline_worker: "frontline-worker-dashboard.html",
+
+    doctor: "doctor-dashboard.html",
+
+    facility_staff: "facility-staff-dashboard.html",
+
+    district_admin: "district-admin-dashboard.html"
+
+};
+
+const stepIds = [
+
+    "step-role",
+
+    "step-phone",
+
+    "step-password",
+
+    "step-otp"
+
+];
+
+function showStep(stepId) {
+
+    stepIds.forEach(function(id) {
+
+        const element = document.getElementById(id);
+
+        element.classList.toggle(
+
+            "hidden",
+
+            id !== stepId
+
+        );
+
+    });
+
+    clearMessage();
+
+}
+
+function showMessage(message, type) {
+
+    const box = document.getElementById("message");
+
+    box.textContent = message;
+
+    box.className = "message " + (type || "error");
+
+}
+
+function clearMessage() {
+
+    const box = document.getElementById("message");
+
+    box.textContent = "";
+
+    box.className = "message";
+
+}
+
+/* ROLE SELECTION */
+
+document.querySelectorAll(".role-card").forEach(function(card) {
+
+    card.addEventListener("click", function() {
+
+        document.querySelectorAll(".role-card").forEach(function(item) {
+
+            item.classList.remove("selected");
+
+        });
+
+        card.classList.add("selected");
+
+        selectedRole = card.dataset.role;
+
+        document.getElementById("continue-role").disabled = false;
+
+    });
+
+});
+
+/* CONTINUE ROLE */
+
+document.getElementById("continue-role").addEventListener("click", function() {
+
+    if (!selectedRole) {
+
+        showMessage("Please select your role.");
+
+        return;
+
+    }
+
+    showStep("step-phone");
+
+});
+
+/* BACK TO ROLE */
+
+document.getElementById("back-to-role").addEventListener("click", function() {
+
+    showStep("step-role");
+
+});
+
+/* PASSWORD LOGIN PAGE */
+
+document.getElementById("use-password").addEventListener("click", function() {
+
+    showStep("step-password");
+
+    setTimeout(function() {
+
+        document.getElementById("email-input").focus();
+
+    }, 100);
+
+});
+
+/* BACK FROM PASSWORD */
+
+document.getElementById("back-password").addEventListener("click", function() {
+
+    showStep("step-phone");
+
+});
+
+/* REAL BACKEND LOGIN */
+
+document.getElementById("password-login").addEventListener("click", async function() {
+
+    const email = document
+
+        .getElementById("email-input")
+
+        .value
+
+        .trim();
+
+    const password = document
+
+        .getElementById("password-input")
+
+        .value;
+
+    if (!email) {
+
+        showMessage("Please enter your email address.");
+
+        return;
+
+    }
+
+    if (!password) {
+
+        showMessage("Please enter your password.");
+
+        return;
+
+    }
+
+    if (!selectedRole) {
+
+        showMessage("Please select your role first.");
+
+        return;
+
+    }
+
+    const loginButton =
+
+        document.getElementById("password-login");
+
+    loginButton.disabled = true;
+
+    loginButton.textContent = "Signing in...";
+
+    try {
+
+        const response = await fetch(
+
+            API_BASE_URL + "/api/auth/login",
+
+            {
+
+                method: "POST",
+
+                headers: {
+
+                    "Content-Type": "application/json"
+
+                },
+
+                body: JSON.stringify({
+
+                    email: email,
+
+                    password: password
+
+                })
+
+            }
+
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+
+            throw new Error(
+
+                data.message || "Login failed"
+
+            );
+
+        }
+
+        console.log("Login response:", data);
+
+        const token =
+
+            data.token ||
+
+            data.accessToken ||
+
+            data.data?.token ||
+
+            data.data?.accessToken;
+
+        const user =
+
+            data.user ||
+
+            data.data?.user ||
+
+            null;
+
+        if (!token) {
+
+            throw new Error(
+
+                "Login successful, but authentication token was not returned."
+
+            );
+
+        }
+
+        const loggedInRole =
+
+            user?.role ||
+
+            data.role ||
+
+            data.data?.role ||
+
+            selectedRole;
+
+        if (
+
+            loggedInRole &&
+
+            loggedInRole !== selectedRole
+
+        ) {
+
+            showMessage(
+
+                "This account belongs to the " +
+
+                loggedInRole.replace("_", " ") +
+
+                " role. Please select the correct role."
+
+            );
+
+            return;
+
+        }
+
+        localStorage.setItem(
+
+            "gramarogya_token",
+
+            token
+
+        );
+
+        if (user) {
+
+            localStorage.setItem(
+
+                "gramarogya_user",
+
+                JSON.stringify(user)
+
+            );
+
+        }
+
+        localStorage.setItem(
+
+            "gramarogya_role",
+
+            loggedInRole
+
+        );
+
+        const dashboard =
+
+            dashboardMap[loggedInRole];
+
+        if (!dashboard) {
+
+            throw new Error(
+
+                "Dashboard is not configured for this role."
+
+            );
+
+        }
+
+        showMessage(
+
+            "Login successful. Opening your dashboard...",
+
+            "success"
+
+        );
+
+        setTimeout(function() {
+
+            window.location.href = dashboard;
+
+        }, 700);
+
+    } catch (error) {
+
+        console.error("Login error:", error);
+
+        showMessage(
+
+            error.message ||
+
+            "Unable to connect to GramArogya server."
+
+        );
+
+    } finally {
+
+        loginButton.disabled = false;
+
+        loginButton.textContent = "Sign In";
+
+    }
+
+});
+
+/* PHONE / OTP DEMO */
+
+document.getElementById("send-otp").addEventListener("click", function() {
+
+    const phone =
+
+        document.getElementById("phone-input").value.trim();
+
+    if (!/^\d{10}$/.test(phone)) {
+
+        showMessage(
+
+            "Please enter a valid 10-digit mobile number."
+
+        );
+
+        return;
+
+    }
+
+    enteredPhone =
+
+        phone.slice(0, 5) +
+
+        " " +
+
+        phone.slice(5);
+
+    document.getElementById("otp-sub-text").textContent =
+
+        "Sent to +91 " + enteredPhone;
+
+    showStep("step-otp");
+
+});
+
+/* OTP INPUT */
+
+const otpInputs =
+
+    document.querySelectorAll(".otp-input");
+
+otpInputs.forEach(function(input, index) {
+
+    input.addEventListener("input", function() {
+
+        input.value =
+
+            input.value.replace(/[^0-9]/g, "");
+
+        if (
+
+            input.value &&
+
+            index < otpInputs.length - 1
+
+        ) {
+
+            otpInputs[index + 1].focus();
+
+        }
+
+    });
+
+    input.addEventListener("keydown", function(event) {
+
+        if (
+
+            event.key === "Backspace" &&
+
+            !input.value &&
+
+            index > 0
+
+        ) {
+
+            otpInputs[index - 1].focus();
+
+        }
+
+    });
+
+});
+
+/* OTP VERIFY DEMO */
+
+document.getElementById("verify-otp").addEventListener("click", function() {
+
+    const code =
+
+        Array.from(otpInputs)
+
+            .map(function(input) {
+
+                return input.value;
+
+            })
+
+            .join("");
+
+    if (code.length !== 4) {
+
+        showMessage(
+
+            "Please enter all 4 OTP digits."
+
+        );
+
+        return;
+
+    }
+
+    showMessage(
+
+        "OTP verification will be connected to the backend next.",
+
+        "success"
+
+    );
+
+});
+
+/* BACK TO PHONE */
+
+document.getElementById("back-to-phone").addEventListener("click", function() {
+
+    showStep("step-phone");
+
+});
+
+/* LANGUAGE BUTTONS */
+
+document.querySelectorAll(".lang-switch button")
+
+    .forEach(function(button) {
+
+        button.addEventListener("click", function() {
+
+            document.querySelectorAll(".lang-switch button")
+
+                .forEach(function(btn) {
+
+                    btn.classList.remove("active");
+
+                });
+
+            button.classList.add("active");
+
+        });
+
+    });
+
+/* ENTER KEY LOGIN */
+
+document.getElementById("password-input")
+
+    .addEventListener("keydown", function(event) {
+
+        if (event.key === "Enter") {
+
+            document
+
+                .getElementById("password-login")
+
+                .click();
+
+        }
+
+    });
+
+</script>
+
+</body>
+</html>

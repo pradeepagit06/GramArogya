@@ -1,0 +1,1516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GramArogya — Voice & Language Assistant</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=Hind:wght@400;500;600;700&display=swap');
+
+:root{
+  --teal-900:#0F3B34;
+  --teal-700:#14584D;
+  --marigold-500:#E8A33D;
+  --cream-50:#FBF8F2;
+  --cream-100:#F3EDE0;
+  --charcoal-900:#25231F;
+  --charcoal-600:#5B564C;
+  --sage-500:#7FA684;
+  --clay-600:#B5502E;
+  --line:#E2DACB;
+  --radius:12px;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:'Hind',sans-serif;
+  background:var(--cream-50);
+  color:var(--charcoal-900);
+  padding:40px 20px;
+  display:flex;
+  justify-content:center;
+}
+
+.wrap{
+  width:100%;
+  max-width:760px;
+}
+
+h1{
+  font-family:'Source Serif 4',serif;
+  font-weight:700;
+  font-size:28px;
+  margin:0 0 4px 0;
+}
+
+.sub{
+  color:var(--charcoal-600);
+  font-size:15px;
+  margin:0 0 28px 0;
+}
+
+.panel{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:24px;
+  margin-bottom:20px;
+}
+
+.panel h2{
+  font-family:'Source Serif 4',serif;
+  font-size:18px;
+  font-weight:600;
+  margin:0 0 4px 0;
+}
+
+.panel .hint{
+  color:var(--charcoal-600);
+  font-size:13.5px;
+  margin:0 0 18px 0;
+}
+
+.lang-row{
+  display:flex;
+  gap:8px;
+  margin-bottom:18px;
+  flex-wrap:wrap;
+}
+
+.lang-pill{
+  border:1.5px solid var(--line);
+  background:var(--cream-100);
+  border-radius:999px;
+  padding:8px 16px;
+  font-size:13.5px;
+  font-weight:600;
+  cursor:pointer;
+  color:var(--charcoal-600);
+}
+
+.lang-pill.active{
+  background:var(--teal-900);
+  border-color:var(--teal-900);
+  color:#fff;
+}
+
+.mic-row{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  margin-bottom:14px;
+}
+
+.mic-btn{
+  width:56px;
+  height:56px;
+  border-radius:50%;
+  border:none;
+  background:var(--marigold-500);
+  color:#fff;
+  font-size:22px;
+  cursor:pointer;
+  flex-shrink:0;
+}
+
+.mic-btn.listening{
+  background:var(--clay-600);
+  animation:pulse 1.1s infinite;
+}
+
+@keyframes pulse{
+  0%{
+    box-shadow:0 0 0 0 rgba(181,80,46,.45);
+  }
+  70%{
+    box-shadow:0 0 0 14px rgba(181,80,46,0);
+  }
+  100%{
+    box-shadow:0 0 0 0 rgba(181,80,46,0);
+  }
+}
+
+textarea{
+  width:100%;
+  border:1.5px solid var(--line);
+  border-radius:var(--radius);
+  padding:12px 14px;
+  font-family:'Hind',sans-serif;
+  font-size:15.5px;
+  resize:vertical;
+  min-height:80px;
+  outline:none;
+}
+
+textarea:focus{
+  border-color:var(--teal-700);
+}
+
+.status{
+  font-size:13px;
+  color:var(--charcoal-600);
+  min-height:18px;
+  margin-bottom:6px;
+}
+
+.button-row{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+
+.action-btn{
+  border:none;
+  background:var(--teal-900);
+  color:#fff;
+  border-radius:8px;
+  padding:10px 16px;
+  font-size:13.5px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.action-btn:hover{
+  background:var(--teal-700);
+}
+
+.action-btn:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+}
+
+.speak-btn{
+  border:1.5px solid var(--line);
+  background:#fff;
+  border-radius:8px;
+  padding:10px 14px;
+  font-size:13.5px;
+  font-weight:600;
+  cursor:pointer;
+  color:var(--teal-900);
+}
+
+.speak-btn:hover{
+  border-color:var(--teal-700);
+}
+
+.translation-box{
+  margin-top:20px;
+  padding:16px;
+  background:var(--cream-100);
+  border-radius:10px;
+  border:1px solid var(--line);
+}
+
+.translation-title{
+  font-size:12px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  color:var(--charcoal-600);
+  margin-bottom:6px;
+}
+
+.translation-text{
+  font-size:17px;
+  line-height:1.5;
+  min-height:28px;
+}
+
+.search-row{
+  margin-bottom:16px;
+}
+
+.search-row input{
+  width:100%;
+  border:1.5px solid var(--line);
+  border-radius:var(--radius);
+  padding:11px 14px;
+  font-family:'Hind',sans-serif;
+  font-size:15px;
+  outline:none;
+}
+
+.search-row input:focus{
+  border-color:var(--teal-700);
+}
+
+.phrase-list{
+  display:flex;
+  flex-direction:column;
+  gap:0;
+}
+
+.phrase-row{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr auto;
+  gap:10px;
+  align-items:center;
+  padding:12px 4px;
+  border-bottom:1px solid var(--line);
+}
+
+.phrase-row:last-child{
+  border-bottom:none;
+}
+
+.phrase-cell{
+  font-size:14px;
+  line-height:1.4;
+}
+
+.phrase-cell.category{
+  font-size:11.5px;
+  color:var(--sage-500);
+  font-weight:600;
+  text-transform:uppercase;
+  letter-spacing:.03em;
+  margin-bottom:2px;
+  display:block;
+}
+
+.phrase-play{
+  border:none;
+  background:var(--cream-100);
+  border-radius:50%;
+  width:32px;
+  height:32px;
+  cursor:pointer;
+  font-size:14px;
+  color:var(--teal-900);
+}
+
+.col-head{
+  font-size:12px;
+  font-weight:700;
+  color:var(--charcoal-600);
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  padding:0 4px 8px 4px;
+}
+
+.note{
+  font-size:13px;
+  color:var(--charcoal-600);
+  background:var(--cream-100);
+  border-radius:8px;
+  padding:12px 14px;
+  line-height:1.5;
+}
+
+@media(max-width:650px){
+  .phrase-row{
+    grid-template-columns:1fr;
+    gap:6px;
+  }
+
+  .col-head{
+    display:none;
+  }
+
+  .phrase-play{
+    justify-self:start;
+  }
+
+  body{
+    padding:20px 12px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrap">
+
+  <h1>Voice &amp; Language Assistant</h1>
+
+  <p class="sub">
+    Speak or type in English, Hindi or Marathi — GramArogya translates the message
+    and reads the translated result aloud.
+  </p>
+
+  <div class="panel">
+
+    <h2>Speak &amp; Translate</h2>
+
+    <p class="hint">
+      Speak or type your message, choose the source language and translate it
+      into another supported language.
+    </p>
+
+    <div class="translation-title">Source Language</div>
+
+    <div class="lang-row" id="source-lang-row">
+
+      <button class="lang-pill active" data-code="en">
+        English
+      </button>
+
+      <button class="lang-pill" data-code="hi">
+        हिंदी
+      </button>
+
+      <button class="lang-pill" data-code="mr">
+        मराठी
+      </button>
+
+    </div>
+
+    <div class="translation-title">Translate To</div>
+
+    <div class="lang-row" id="target-lang-row">
+
+      <button class="lang-pill active" data-code="hi">
+        हिंदी
+      </button>
+
+      <button class="lang-pill" data-code="en">
+        English
+      </button>
+
+      <button class="lang-pill" data-code="mr">
+        मराठी
+      </button>
+
+    </div>
+
+    <div class="mic-row">
+
+      <button
+        class="mic-btn"
+        id="mic-btn"
+        title="Tap to speak">
+        🎤
+      </button>
+
+      <textarea
+        id="voice-text"
+        placeholder="Tap the mic and speak, or type here…"></textarea>
+
+    </div>
+
+    <div class="status" id="voice-status"></div>
+
+    <div class="button-row">
+
+      <button
+        class="action-btn"
+        id="translate-btn">
+        Translate
+      </button>
+
+      <button
+        class="speak-btn"
+        id="speak-source-btn">
+        🔊 Read Source
+      </button>
+
+      <button
+        class="speak-btn"
+        id="speak-result-btn">
+        🔊 Read Translation
+      </button>
+
+    </div>
+
+    <div class="translation-box">
+
+      <div class="translation-title">
+        Translation Result
+      </div>
+
+      <div
+        class="translation-text"
+        id="translation-result">
+        Translation will appear here.
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="panel">
+
+    <h2>Common Phrase Bank</h2>
+
+    <p class="hint">
+      Frequently used registration, triage and consultation phrases,
+      ready in all three languages.
+    </p>
+
+    <div class="search-row">
+
+      <input
+        type="text"
+        id="phrase-search"
+        placeholder="Search a phrase, e.g. fever, appointment, तेज़ बुखार…">
+
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;">
+
+      <div class="col-head">
+        English
+      </div>
+
+      <div class="col-head">
+        हिंदी
+      </div>
+
+      <div class="col-head">
+        मराठी
+      </div>
+
+      <div class="col-head"></div>
+
+    </div>
+
+    <div
+      class="phrase-list"
+      id="phrase-list">
+    </div>
+
+  </div>
+
+  <div class="note">
+
+    <strong>GramArogya:</strong>
+    Voice input, translation and speech output are provided for
+    communication assistance. For actual clinical decisions,
+    healthcare professionals should verify the translated information.
+
+  </div>
+
+</div>
+
+<script>
+
+const API_BASE = "http://localhost:4000";
+
+const micBtn =
+  document.getElementById("mic-btn");
+
+const voiceText =
+  document.getElementById("voice-text");
+
+const voiceStatus =
+  document.getElementById("voice-status");
+
+const translateBtn =
+  document.getElementById("translate-btn");
+
+const translationResult =
+  document.getElementById("translation-result");
+
+const speakSourceBtn =
+  document.getElementById("speak-source-btn");
+
+const speakResultBtn =
+  document.getElementById("speak-result-btn");
+
+const phraseListEl =
+  document.getElementById("phrase-list");
+
+
+/* =========================================================
+   PHRASE BANK
+========================================================= */
+
+const phrases = [
+
+  {
+    cat:"Registration",
+    en:"What is your name?",
+    hi:"आपका नाम क्या है?",
+    mr:"तुमचं नाव काय आहे?"
+  },
+
+  {
+    cat:"Registration",
+    en:"What is your age?",
+    hi:"आपकी उम्र क्या है?",
+    mr:"तुमचं वय काय आहे?"
+  },
+
+  {
+    cat:"Registration",
+    en:"Which village are you from?",
+    hi:"आप किस गांव से हैं?",
+    mr:"तुम्ही कोणत्या गावातून आहात?"
+  },
+
+  {
+    cat:"Triage",
+    en:"Do you have fever?",
+    hi:"क्या आपको बुखार है?",
+    mr:"तुम्हाला ताप आहे का?"
+  },
+
+  {
+    cat:"Triage",
+    en:"Since when do you have this pain?",
+    hi:"यह दर्द कब से है?",
+    mr:"हे दुखणे कधीपासून आहे?"
+  },
+
+  {
+    cat:"Triage",
+    en:"Are you having difficulty breathing?",
+    hi:"क्या आपको सांस लेने में तकलीफ़ है?",
+    mr:"तुम्हाला श्वास घ्यायला त्रास होतोय का?"
+  },
+
+  {
+    cat:"Triage",
+    en:"This looks like an emergency. Please come to the hospital immediately.",
+    hi:"यह आपातकालीन स्थिति लगती है। कृपया तुरंत अस्पताल आएं।",
+    mr:"ही आणीबाणीची परिस्थिती वाटते. कृपया लगेच रुग्णालयात या."
+  },
+
+  {
+    cat:"Consultation",
+    en:"Take this medicine twice a day after food.",
+    hi:"यह दवा खाना खाने के बाद दिन में दो बार लें।",
+    mr:"हे औषध जेवणानंतर दिवसातून दोनदा घ्या."
+  },
+
+  {
+    cat:"Consultation",
+    en:"Please drink plenty of water and take rest.",
+    hi:"कृपया खूब पानी पिएं और आराम करें।",
+    mr:"कृपया भरपूर पाणी प्या आणि विश्रांती घ्या."
+  },
+
+  {
+    cat:"Referral",
+    en:"You are being referred to the district hospital.",
+    hi:"आपको जिला अस्पताल भेजा जा रहा है।",
+    mr:"तुम्हाला जिल्हा रुग्णालयात पाठवले जात आहे."
+  },
+
+  {
+    cat:"Follow-up",
+    en:"Please come back for a follow-up after 7 days.",
+    hi:"कृपया 7 दिन बाद फिर से जांच के लिए आएं।",
+    mr:"कृपया 7 दिवसांनी पुन्हा तपासणीसाठी या."
+  },
+
+  {
+    cat:"Appointment",
+    en:"Your appointment is confirmed for tomorrow at 10:30 AM.",
+    hi:"आपकी नियुक्ति कल सुबह 10:30 बजे के लिए तय है।",
+    mr:"तुमची भेट उद्या सकाळी 10:30 वाजता निश्चित झाली आहे."
+  },
+
+  {
+    cat:"General",
+    en:"Do you have any allergies?",
+    hi:"क्या आपको किसी चीज़ से एलर्जी है?",
+    mr:"तुम्हाला कशाची ॲलर्जी आहे का?"
+  },
+
+  {
+    cat:"General",
+    en:"Please show your patient ID card.",
+    hi:"कृपया अपना मरीज़ पहचान पत्र दिखाएं।",
+    mr:"कृपया तुमचं रुग्ण ओळखपत्र दाखवा."
+  }
+
+];
+
+
+function renderPhrases(filter = ""){
+
+  phraseListEl.innerHTML = "";
+
+  const f =
+    filter.trim().toLowerCase();
+
+  const filtered =
+    phrases.filter(p =>
+      !f ||
+      p.en.toLowerCase().includes(f) ||
+      p.hi.includes(filter.trim()) ||
+      p.mr.includes(filter.trim()) ||
+      p.cat.toLowerCase().includes(f)
+    );
+
+  if(filtered.length === 0){
+
+    phraseListEl.innerHTML =
+      '<div style="padding:16px 4px;color:var(--charcoal-600);font-size:14px;">No matching phrases.</div>';
+
+    return;
+  }
+
+  filtered.forEach(p => {
+
+    const row =
+      document.createElement("div");
+
+    row.className =
+      "phrase-row";
+
+    row.innerHTML = `
+
+      <div class="phrase-cell">
+        <span class="category">${p.cat}</span>
+        ${p.en}
+      </div>
+
+      <div class="phrase-cell">
+        ${p.hi}
+      </div>
+
+      <div class="phrase-cell">
+        ${p.mr}
+      </div>
+
+      <button
+        class="phrase-play"
+        title="Play Hindi">
+        🔊
+      </button>
+
+    `;
+
+    row
+      .querySelector(".phrase-play")
+      .addEventListener("click", () => {
+
+        speak(p.hi, "hi");
+
+      });
+
+    phraseListEl.appendChild(row);
+
+  });
+
+}
+
+renderPhrases();
+
+
+document
+  .getElementById("phrase-search")
+  .addEventListener("input", e => {
+
+    renderPhrases(e.target.value);
+
+  });
+
+
+/* =========================================================
+   LANGUAGE SETTINGS
+========================================================= */
+
+let sourceLang = "en";
+let targetLang = "hi";
+
+
+function setupLanguageButtons(
+  containerId,
+  callback
+){
+
+  document
+    .querySelectorAll(`#${containerId} .lang-pill`)
+    .forEach(btn => {
+
+      btn.addEventListener("click", () => {
+
+        document
+          .querySelectorAll(`#${containerId} .lang-pill`)
+          .forEach(b =>
+            b.classList.remove("active")
+          );
+
+        btn.classList.add("active");
+
+        callback(
+          btn.getAttribute("data-code")
+        );
+
+      });
+
+    });
+
+}
+
+
+setupLanguageButtons(
+  "source-lang-row",
+  code => {
+
+    sourceLang = code;
+
+    voiceStatus.textContent =
+      "Source language changed.";
+
+  }
+);
+
+
+setupLanguageButtons(
+  "target-lang-row",
+  code => {
+
+    targetLang = code;
+
+    voiceStatus.textContent =
+      "Target language changed.";
+
+  }
+);
+
+
+/* =========================================================
+   BROWSER TEXT TO SPEECH
+========================================================= */
+
+let availableVoices = [];
+
+
+function loadVoices(){
+
+  if(!("speechSynthesis" in window)){
+    return;
+  }
+
+  availableVoices =
+    window.speechSynthesis.getVoices();
+
+}
+
+
+if("speechSynthesis" in window){
+
+  loadVoices();
+
+  window.speechSynthesis.onvoiceschanged =
+    loadVoices;
+
+}
+
+
+function getSpeechLanguage(code){
+
+  const languages = {
+
+    en:"en-IN",
+    hi:"hi-IN",
+    mr:"mr-IN"
+
+  };
+
+  return languages[code] || "en-IN";
+
+}
+
+
+function findVoice(code){
+
+  loadVoices();
+
+  if(!availableVoices.length){
+    return null;
+  }
+
+  const language =
+    getSpeechLanguage(code).toLowerCase();
+
+  let voice =
+    availableVoices.find(
+      voice =>
+        voice.lang &&
+        voice.lang.toLowerCase() === language
+    );
+
+  if(voice){
+    return voice;
+  }
+
+  const baseLanguage =
+    language.split("-")[0];
+
+  voice =
+    availableVoices.find(
+      voice =>
+        voice.lang &&
+        voice.lang
+          .toLowerCase()
+          .startsWith(baseLanguage)
+    );
+
+  return voice || null;
+
+}
+
+
+/* =========================================================
+   STOP AUDIO
+========================================================= */
+
+let currentAudio = null;
+
+
+function stopCurrentAudio(){
+
+  if(currentAudio){
+
+    try{
+
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
+
+    }catch(error){
+
+      console.error(
+        "Audio stop error:",
+        error
+      );
+
+    }
+
+    currentAudio = null;
+
+  }
+
+}
+
+
+/* =========================================================
+   BACKEND TTS
+========================================================= */
+
+async function playBackendTTS(
+  text,
+  langCode
+){
+
+  stopCurrentAudio();
+
+  voiceStatus.textContent =
+    "Loading speech...";
+
+  const response =
+    await fetch(
+      `${API_BASE}/api/tts`,
+      {
+        method:"POST",
+
+        headers:{
+          "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify({
+          text:text,
+          lang:langCode
+        })
+      }
+    );
+
+  if(!response.ok){
+
+    let message =
+      "Text to speech failed.";
+
+    try{
+
+      const data =
+        await response.json();
+
+      if(data.message){
+        message = data.message;
+      }
+
+    }catch(error){
+      console.error(error);
+    }
+
+    throw new Error(message);
+
+  }
+
+  const audioBlob =
+    await response.blob();
+
+  const audioUrl =
+    URL.createObjectURL(audioBlob);
+
+  const audio =
+    new Audio(audioUrl);
+
+  currentAudio = audio;
+
+  audio.onplay = () => {
+
+    voiceStatus.textContent =
+      "Reading aloud...";
+
+  };
+
+  audio.onended = () => {
+
+    URL.revokeObjectURL(audioUrl);
+
+    currentAudio = null;
+
+    voiceStatus.textContent =
+      "Finished reading.";
+
+  };
+
+  audio.onerror = error => {
+
+    console.error(
+      "Backend audio playback error:",
+      error
+    );
+
+    URL.revokeObjectURL(audioUrl);
+
+    currentAudio = null;
+
+    voiceStatus.textContent =
+      "Unable to play the speech.";
+
+  };
+
+  await audio.play();
+
+}
+
+
+/* =========================================================
+   ENGLISH BROWSER SPEECH
+========================================================= */
+
+function playEnglishBrowserSpeech(text){
+
+  return new Promise((resolve, reject) => {
+
+    if(!("speechSynthesis" in window)){
+
+      reject(
+        new Error(
+          "Browser speech synthesis is unavailable."
+        )
+      );
+
+      return;
+
+    }
+
+    window.speechSynthesis.cancel();
+
+    setTimeout(() => {
+
+      const utterance =
+        new SpeechSynthesisUtterance(text);
+
+      utterance.lang =
+        "en-IN";
+
+      utterance.rate =
+        0.85;
+
+      utterance.pitch =
+        1;
+
+      utterance.volume =
+        1;
+
+      const selectedVoice =
+        findVoice("en");
+
+      if(selectedVoice){
+
+        utterance.voice =
+          selectedVoice;
+
+      }
+
+      utterance.onstart = () => {
+
+        voiceStatus.textContent =
+          "Reading aloud...";
+
+      };
+
+      utterance.onend = () => {
+
+        voiceStatus.textContent =
+          "Finished reading.";
+
+        resolve();
+
+      };
+
+      utterance.onerror = event => {
+
+        console.error(
+          "English browser speech error:",
+          event.error
+        );
+
+        reject(
+          new Error(
+            "English speech playback failed."
+          )
+        );
+
+      };
+
+      window.speechSynthesis.speak(
+        utterance
+      );
+
+    }, 100);
+
+  });
+
+}
+
+
+/* =========================================================
+   MAIN SPEAK FUNCTION
+========================================================= */
+
+async function speak(
+  text,
+  langCode
+){
+
+  if(!text || !text.trim()){
+
+    voiceStatus.textContent =
+      "Nothing to read.";
+
+    return;
+
+  }
+
+  const cleanText =
+    text.trim();
+
+  try{
+
+    stopCurrentAudio();
+
+    if("speechSynthesis" in window){
+
+      window.speechSynthesis.cancel();
+
+    }
+
+    /*
+      Hindi and Marathi use backend TTS because
+      the browser currently has only English voices.
+
+      English uses browser speech synthesis.
+    */
+
+    if(
+      langCode === "hi" ||
+      langCode === "mr"
+    ){
+
+      await playBackendTTS(
+        cleanText,
+        langCode
+      );
+
+      return;
+
+    }
+
+    await playEnglishBrowserSpeech(
+      cleanText
+    );
+
+  }catch(error){
+
+    console.error(
+      "Speech error:",
+      error
+    );
+
+    voiceStatus.textContent =
+      "Unable to read aloud. Please check your internet connection.";
+
+  }
+
+}
+
+
+/* =========================================================
+   SPEECH TO TEXT
+========================================================= */
+
+const SpeechRecognition =
+  window.SpeechRecognition ||
+  window.webkitSpeechRecognition;
+
+let recognizer = null;
+let isListening = false;
+
+
+if(SpeechRecognition){
+
+  recognizer =
+    new SpeechRecognition();
+
+  recognizer.continuous =
+    false;
+
+  recognizer.interimResults =
+    true;
+
+  recognizer.onresult = event => {
+
+    let transcript = "";
+
+    for(
+      let i = 0;
+      i < event.results.length;
+      i++
+    ){
+
+      transcript +=
+        event.results[i][0].transcript;
+
+    }
+
+    voiceText.value =
+      transcript;
+
+  };
+
+
+  recognizer.onerror = event => {
+
+    console.error(
+      "Speech recognition error:",
+      event
+    );
+
+    voiceStatus.textContent =
+      "Could not hear that. Try again.";
+
+    stopListening();
+
+  };
+
+
+  recognizer.onend = () => {
+
+    stopListening();
+
+  };
+
+}else{
+
+  voiceStatus.textContent =
+    "Voice input is not supported in this browser. You can type instead.";
+
+  micBtn.disabled =
+    true;
+
+  micBtn.style.opacity =
+    "0.4";
+
+}
+
+
+function startListening(){
+
+  if(!recognizer){
+    return;
+  }
+
+  recognizer.lang =
+    getSpeechLanguage(sourceLang);
+
+  try{
+
+    recognizer.start();
+
+    isListening =
+      true;
+
+    micBtn.classList.add(
+      "listening"
+    );
+
+    voiceStatus.textContent =
+      "Listening... speak now.";
+
+  }catch(error){
+
+    console.error(
+      "Recognition start error:",
+      error
+    );
+
+  }
+
+}
+
+
+function stopListening(){
+
+  isListening =
+    false;
+
+  micBtn.classList.remove(
+    "listening"
+  );
+
+}
+
+
+micBtn.addEventListener(
+  "click",
+  () => {
+
+    if(isListening){
+
+      recognizer.stop();
+
+      stopListening();
+
+    }else{
+
+      startListening();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   TRANSLATION API
+========================================================= */
+
+async function translateFreeText(
+  text,
+  source,
+  target
+){
+
+  const response =
+    await fetch(
+      `${API_BASE}/api/translate`,
+      {
+        method:"POST",
+
+        headers:{
+          "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify({
+
+          text:text,
+
+          source:source,
+
+          target:target
+
+        })
+
+      }
+    );
+
+  const data =
+    await response.json();
+
+  if(!response.ok){
+
+    throw new Error(
+      data.message ||
+      "Translation failed"
+    );
+
+  }
+
+  return data.translatedText;
+
+}
+
+
+/* =========================================================
+   TRANSLATE BUTTON
+========================================================= */
+
+translateBtn.addEventListener(
+  "click",
+  async () => {
+
+    const text =
+      voiceText.value.trim();
+
+    if(!text){
+
+      voiceStatus.textContent =
+        "Please speak or type something first.";
+
+      return;
+
+    }
+
+    if(sourceLang === targetLang){
+
+      translationResult.textContent =
+        text;
+
+      voiceStatus.textContent =
+        "Source and target languages are the same.";
+
+      return;
+
+    }
+
+    translateBtn.disabled =
+      true;
+
+    translateBtn.textContent =
+      "Translating...";
+
+    voiceStatus.textContent =
+      "Translating your message...";
+
+    try{
+
+      const translated =
+        await translateFreeText(
+          text,
+          sourceLang,
+          targetLang
+        );
+
+      translationResult.textContent =
+        translated;
+
+      voiceStatus.textContent =
+        "Translation completed successfully.";
+
+    }catch(error){
+
+      console.error(
+        "Translation error:",
+        error
+      );
+
+      translationResult.textContent =
+        "Translation failed.";
+
+      voiceStatus.textContent =
+        error.message ||
+        "Unable to translate. Please try again.";
+
+    }finally{
+
+      translateBtn.disabled =
+        false;
+
+      translateBtn.textContent =
+        "Translate";
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   READ SOURCE
+========================================================= */
+
+speakSourceBtn.addEventListener(
+  "click",
+  () => {
+
+    const text =
+      voiceText.value.trim();
+
+    if(!text){
+
+      voiceStatus.textContent =
+        "Please enter or speak some text first.";
+
+      return;
+
+    }
+
+    speak(
+      text,
+      sourceLang
+    );
+
+  }
+);
+
+
+/* =========================================================
+   READ TRANSLATION
+========================================================= */
+
+speakResultBtn.addEventListener(
+  "click",
+  async () => {
+
+    const text =
+      translationResult.textContent.trim();
+
+    if(
+      !text ||
+      text === "Translation will appear here." ||
+      text === "Translation failed."
+    ){
+
+      voiceStatus.textContent =
+        "Please translate a message first.";
+
+      return;
+
+    }
+
+    speakResultBtn.disabled =
+      true;
+
+    speakResultBtn.textContent =
+      "Reading...";
+
+    try{
+
+      await speak(
+        text,
+        targetLang
+      );
+
+    }finally{
+
+      speakResultBtn.disabled =
+        false;
+
+      speakResultBtn.textContent =
+        "🔊 Read Translation";
+
+    }
+
+  }
+);
+
+</script>
+
+</body>
+</html>
