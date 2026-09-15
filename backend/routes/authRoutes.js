@@ -302,6 +302,53 @@ router.get(
     }
   }
 );
+// ========================================
+// TEMPORARY PASSWORD RESET
+// ========================================
+router.post("/reset-demo-password", async (req, res) => {
+  try {
+    const { email, new_password } = req.body;
+
+    if (!email || !new_password) {
+      return res.status(400).json({
+        status: "error",
+        message: "Email and new password are required"
+      });
+    }
+
+    const passwordHash = await bcrypt.hash(new_password, 10);
+
+    const result = await pool.query(
+      `UPDATE users
+       SET password_hash = $1,
+           updated_at = NOW()
+       WHERE email = $2
+       RETURNING id, email, role, full_name`,
+      [passwordHash, email]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        status: "error",
+        message: "User not found"
+      });
+    }
+
+    res.json({
+      status: "success",
+      message: "Demo password updated successfully",
+      user: result.rows[0]
+    });
+
+  } catch (error) {
+    console.error("Password reset error:", error.message);
+
+    res.status(500).json({
+      status: "error",
+      message: "Password reset failed"
+    });
+  }
+});
 
 module.exports = router;
 
