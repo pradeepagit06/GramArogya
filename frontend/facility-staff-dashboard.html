@@ -1,0 +1,2937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Facility Staff Dashboard - GramArogya</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      background: #f4f7fb;
+      color: #1f2937;
+    }
+
+    .navbar {
+      background: #166534;
+      color: white;
+      padding: 18px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .navbar h1 {
+      font-size: 24px;
+    }
+
+    .navbar-right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .navbar-right span {
+      font-size: 14px;
+    }
+
+    .logout-btn {
+      border: none;
+      background: white;
+      color: #166534;
+      padding: 9px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .container {
+      width: 92%;
+      max-width: 1400px;
+      margin: 25px auto;
+    }
+
+    .error-message,
+    .success-message {
+      display: none;
+      padding: 14px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .error-message {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+
+    .success-message {
+      background: #dcfce7;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+    }
+
+    .facility-card,
+    .section,
+    .summary-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+    }
+
+    .facility-card {
+      padding: 22px;
+      margin-bottom: 25px;
+    }
+
+    .facility-card h2,
+    .section h2 {
+      color: #166534;
+    }
+
+    .facility-card h2 {
+      margin-bottom: 15px;
+    }
+
+    .facility-info {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+    }
+
+    .info-box {
+      background: #f0fdf4;
+      padding: 15px;
+      border-radius: 8px;
+    }
+
+    .info-box strong,
+    .profile-box strong {
+      display: block;
+      color: #166534;
+      margin-bottom: 5px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-bottom: 25px;
+    }
+
+    .summary-card {
+      padding: 22px;
+      border-left: 5px solid #166534;
+    }
+
+    .summary-card h3 {
+      font-size: 14px;
+      color: #6b7280;
+      margin-bottom: 10px;
+    }
+
+    .summary-card .count {
+      font-size: 32px;
+      font-weight: bold;
+      color: #166534;
+    }
+
+    .section {
+      padding: 22px;
+      margin-bottom: 25px;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .section h2 {
+      font-size: 20px;
+    }
+
+    .refresh-btn,
+    .search-btn {
+      border: none;
+      background: #166534;
+      color: white;
+      padding: 9px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .refresh-btn:hover,
+    .search-btn:hover {
+      background: #14532d;
+    }
+
+    .table-wrapper {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 950px;
+    }
+
+    th {
+      background: #f0fdf4;
+      color: #166534;
+      text-align: left;
+      padding: 13px;
+      border-bottom: 2px solid #dcfce7;
+      font-size: 14px;
+    }
+
+    td {
+      padding: 13px;
+      border-bottom: 1px solid #e5e7eb;
+      font-size: 14px;
+      vertical-align: top;
+    }
+
+    tr:hover {
+      background: #f9fafb;
+    }
+
+    .status,
+    .priority {
+      display: inline-block;
+      padding: 5px 9px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .status-booked {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    .status-confirmed {
+      background: #ede9fe;
+      color: #6d28d9;
+    }
+
+    .status-arrived,
+    .status-patient-arrived {
+      background: #ffedd5;
+      color: #c2410c;
+    }
+
+    .status-in-queue {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .status-in-progress,
+    .status-accepted {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .status-completed {
+      background: #e5e7eb;
+      color: #374151;
+    }
+
+    .status-requested {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    .status-scheduled {
+      background: #ede9fe;
+      color: #6d28d9;
+    }
+
+    .status-sample-collected {
+      background: #ffedd5;
+      color: #c2410c;
+    }
+
+    .status-cancelled {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .status-available {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .status-low-stock {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .status-out-of-stock,
+    .status-unavailable,
+    .status-temporarily-unavailable {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .status-limited {
+      background: #ffedd5;
+      color: #c2410c;
+    }
+
+    .status-created {
+      background: #e0e7ff;
+      color: #3730a3;
+    }
+
+    .status-sent {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    .status-received {
+      background: #cffafe;
+      color: #0e7490;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      border: none;
+      color: white;
+      padding: 8px 11px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 12px;
+    }
+
+    .action-btn:disabled {
+      background: #9ca3af !important;
+      cursor: not-allowed;
+    }
+
+    .confirm-btn {
+      background: #7c3aed;
+    }
+
+    .arrived-btn {
+      background: #ea580c;
+    }
+
+    .checkin-btn {
+      background: #2563eb;
+    }
+
+    .diagnostic-update-btn,
+    .referral-update-btn {
+      background: #166534;
+    }
+
+    .report-btn {
+      background: #2563eb;
+    }
+
+    .availability-btn {
+      background: #7c3aed;
+    }
+
+    .confirm-btn:hover,
+    .availability-btn:hover {
+      background: #6d28d9;
+    }
+
+    .arrived-btn:hover {
+      background: #c2410c;
+    }
+
+    .checkin-btn:hover,
+    .report-btn:hover {
+      background: #1d4ed8;
+    }
+
+    .diagnostic-update-btn:hover,
+    .referral-update-btn:hover {
+      background: #14532d;
+    }
+
+    .queue-number {
+      display: inline-flex;
+      width: 35px;
+      height: 35px;
+      align-items: center;
+      justify-content: center;
+      background: #166534;
+      color: white;
+      border-radius: 50%;
+      font-weight: bold;
+    }
+
+    .empty-message,
+    .loading {
+      text-align: center;
+      color: #6b7280;
+      padding: 25px;
+    }
+
+    .search-area {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .search-area input {
+      flex: 1;
+      padding: 11px 13px;
+      border: 1px solid #d1d5db;
+      border-radius: 7px;
+      outline: none;
+      font-size: 14px;
+    }
+
+    .search-area input:focus {
+      border-color: #166534;
+    }
+
+    .profile-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+    }
+
+    .profile-box {
+      background: #f9fafb;
+      padding: 15px;
+      border-radius: 8px;
+    }
+
+    .report-form {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 260px;
+    }
+
+    .report-form input,
+    .report-form textarea,
+    .availability-form select,
+    .availability-form input,
+    .referral-status-form select {
+      width: 100%;
+      padding: 9px 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      outline: none;
+      font-size: 13px;
+    }
+
+    .report-form textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    .availability-form,
+    .referral-status-form {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      min-width: 260px;
+    }
+
+    .report-box {
+      background: #f0fdf4;
+      border: 1px solid #dcfce7;
+      padding: 10px;
+      border-radius: 7px;
+      margin-top: 8px;
+    }
+
+    .report-box strong {
+      color: #166534;
+    }
+
+    .report-box a {
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .small-text {
+      color: #6b7280;
+      font-size: 12px;
+    }
+
+    .priority-low {
+      background: #e5e7eb;
+      color: #374151;
+    }
+
+    .priority-normal {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    .priority-high {
+      background: #ffedd5;
+      color: #c2410c;
+    }
+
+    .priority-urgent {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    @media (max-width: 1000px) {
+      .summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .facility-info,
+      .profile-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .navbar {
+        padding: 15px;
+      }
+
+      .navbar h1 {
+        font-size: 19px;
+      }
+
+      .container {
+        width: 95%;
+      }
+
+      .navbar-right {
+        gap: 8px;
+      }
+
+      .availability-form,
+      .referral-status-form {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="navbar">
+    <h1>GramArogya</h1>
+
+    <div class="navbar-right">
+      <span>Facility Staff</span>
+
+      <button class="logout-btn" onclick="logout()">
+        Logout
+      </button>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <div id="errorMessage" class="error-message"></div>
+    <div id="successMessage" class="success-message"></div>
+
+    <div class="facility-card">
+      <h2 id="facilityName">Loading facility...</h2>
+
+      <div class="facility-info">
+
+        <div class="info-box">
+          <strong>Type</strong>
+          <span id="facilityType">-</span>
+        </div>
+
+        <div class="info-box">
+          <strong>Address</strong>
+          <span id="facilityAddress">-</span>
+        </div>
+
+        <div class="info-box">
+          <strong>Contact</strong>
+          <span id="facilityContact">-</span>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="summary-grid">
+
+      <div class="summary-card">
+        <h3>Upcoming Appointments</h3>
+        <div class="count" id="upcomingCount">0</div>
+      </div>
+
+      <div class="summary-card">
+        <h3>Waiting Queue</h3>
+        <div class="count" id="waitingCount">0</div>
+      </div>
+
+      <div class="summary-card">
+        <h3>Active Consultations</h3>
+        <div class="count" id="activeCount">0</div>
+      </div>
+
+      <div class="summary-card">
+        <h3>Completed</h3>
+        <div class="count" id="completedCount">0</div>
+      </div>
+
+    </div>
+
+    <div class="section">
+
+      <div class="section-header">
+        <h2>Upcoming Appointments</h2>
+
+        <button class="refresh-btn" onclick="loadDashboard()">
+          Refresh
+        </button>
+      </div>
+
+      <div id="upcomingContainer">
+        <div class="loading">Loading appointments...</div>
+      </div>
+
+    </div>
+
+    <div class="section">
+
+      <div class="section-header">
+        <h2>Waiting Queue</h2>
+      </div>
+
+      <div id="queueContainer">
+        <div class="loading">Loading queue...</div>
+      </div>
+
+    </div>
+
+    <div class="section">
+
+      <div class="section-header">
+        <h2>Active Consultations</h2>
+      </div>
+
+      <div id="activeContainer">
+        <div class="loading">Loading consultations...</div>
+      </div>
+
+    </div>
+
+    <div class="section">
+
+      <div class="section-header">
+        <h2>Completed Consultations</h2>
+      </div>
+
+      <div id="completedContainer">
+        <div class="loading">Loading consultations...</div>
+      </div>
+
+    </div>
+
+    <div class="section">
+
+      <div class="section-header">
+        <h2>Diagnostic Requests</h2>
+
+        <button class="refresh-btn" onclick="loadDiagnosticRequests()">
+          Refresh
+        </button>
+      </div>
+
+      <div id="diagnosticRequestsContainer">
+        <div class="loading">
+          Loading diagnostic requests...
+        </div>
+      </div>
+
+    </div>
+
+    <div class="section">
+
+      <div class="section-header">
+        <h2>Diagnostic Availability</h2>
+
+        <button class="refresh-btn" onclick="loadDiagnosticAvailability()">
+          Refresh
+        </button>
+      </div>
+
+      <div id="diagnosticAvailabilityContainer">
+        <div class="loading">
+          Loading diagnostic availability...
+        </div>
+      </div>
+
+    </div>
+
+    <div class="section">
+
+      <div class="section-header">
+        <h2>Incoming Referrals</h2>
+
+        <button class="refresh-btn" onclick="loadIncomingReferrals()">
+          Refresh
+        </button>
+      </div>
+
+      <div id="incomingReferralsContainer">
+        <div class="loading">
+          Loading incoming referrals...
+        </div>
+      </div>
+
+    </div>
+
+    <div class="section">
+
+      <div class="section-header">
+        <h2>Patient Lookup</h2>
+      </div>
+
+      <div class="search-area">
+
+        <input
+          type="text"
+          id="patientSearch"
+          placeholder="Search by patient name, ID or phone"
+          onkeydown="handleSearchKey(event)"
+        >
+
+        <button class="search-btn" onclick="searchPatients()">
+          Search
+        </button>
+
+      </div>
+
+      <div id="searchResults"></div>
+
+    </div>
+
+    <div class="section">
+
+      <div class="section-header">
+        <h2>My Profile</h2>
+
+        <button class="refresh-btn" onclick="loadProfile()">
+          Refresh
+        </button>
+      </div>
+
+      <div id="profileContainer">
+        <div class="loading">
+          Loading profile...
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    const API_BASE = "https://gramarogya-un6g.onrender.com";
+
+    function getToken() {
+      return localStorage.getItem("gramarogya_token");
+    }
+
+    function checkAuthentication() {
+      const token = getToken();
+
+      if (!token) {
+        window.location.href = "gramarogya_login.html";
+        return false;
+      }
+
+      return true;
+    }
+
+    function showError(message) {
+      const errorBox =
+        document.getElementById("errorMessage");
+
+      const successBox =
+        document.getElementById("successMessage");
+
+      errorBox.textContent = message;
+      errorBox.style.display = "block";
+      successBox.style.display = "none";
+
+      setTimeout(() => {
+        errorBox.style.display = "none";
+      }, 5000);
+    }
+
+    function showSuccess(message) {
+      const successBox =
+        document.getElementById("successMessage");
+
+      const errorBox =
+        document.getElementById("errorMessage");
+
+      successBox.textContent = message;
+      successBox.style.display = "block";
+      errorBox.style.display = "none";
+
+      setTimeout(() => {
+        successBox.style.display = "none";
+      }, 4000);
+    }
+
+    async function apiRequest(url, options = {}) {
+      const token = getToken();
+
+      const headers = {
+        "Content-Type": "application/json",
+        ...(options.headers || {})
+      };
+
+      if (token) {
+        headers["Authorization"] =
+          `Bearer ${token}`;
+      }
+
+      const response =
+        await fetch(API_BASE + url, {
+          ...options,
+          headers
+        });
+
+      let data;
+
+      try {
+        data = await response.json();
+      } catch (error) {
+        throw new Error(
+          `Server returned invalid response (${response.status})`
+        );
+      }
+
+      if (response.status === 401) {
+        localStorage.removeItem(
+          "gramarogya_token"
+        );
+
+        window.location.href =
+          "gramarogya_login.html";
+
+        throw new Error("Session expired");
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          data.message ||
+          data.error ||
+          `Request failed (${response.status})`
+        );
+      }
+
+      return data;
+    }
+
+    function formatDate(dateValue) {
+      if (!dateValue) {
+        return "-";
+      }
+
+      const date =
+        new Date(dateValue);
+
+      if (Number.isNaN(date.getTime())) {
+        return dateValue;
+      }
+
+      return date.toLocaleDateString(
+        "en-IN",
+        {
+          day: "2-digit",
+          month: "short",
+          year: "numeric"
+        }
+      );
+    }
+
+    function formatTime(timeValue) {
+      if (!timeValue) {
+        return "-";
+      }
+
+      const parts =
+        String(timeValue).split(":");
+
+      if (parts.length < 2) {
+        return timeValue;
+      }
+
+      let hour =
+        parseInt(parts[0], 10);
+
+      const minute =
+        parts[1];
+
+      if (Number.isNaN(hour)) {
+        return timeValue;
+      }
+
+      const period =
+        hour >= 12 ? "PM" : "AM";
+
+      hour =
+        hour % 12;
+
+      if (hour === 0) {
+        hour = 12;
+      }
+
+      return `${hour}:${minute} ${period}`;
+    }
+
+    function getStatusClass(status) {
+      if (!status) {
+        return "";
+      }
+
+      return String(status)
+        .toLowerCase()
+        .replaceAll("_", "-");
+    }
+
+    async function loadDashboard() {
+      if (!checkAuthentication()) {
+        return;
+      }
+
+      try {
+        const response =
+          await apiRequest(
+            "/api/facility-staff/dashboard"
+          );
+
+        if (response.status !== "success") {
+          throw new Error(
+            response.message ||
+            "Failed to load dashboard"
+          );
+        }
+
+        const data =
+          response.data || {};
+
+        const facility =
+          data.facility || {};
+
+        const statistics =
+          data.statistics || {};
+
+        document.getElementById(
+          "facilityName"
+        ).textContent =
+          facility.name ||
+          "Facility";
+
+        document.getElementById(
+          "facilityType"
+        ).textContent =
+          facility.type || "-";
+
+        document.getElementById(
+          "facilityAddress"
+        ).textContent =
+          facility.address || "-";
+
+        document.getElementById(
+          "facilityContact"
+        ).textContent =
+          facility.contact_phone || "-";
+
+        document.getElementById(
+          "upcomingCount"
+        ).textContent =
+          statistics.upcomingAppointments || 0;
+
+        document.getElementById(
+          "waitingCount"
+        ).textContent =
+          statistics.waitingQueue || 0;
+
+        document.getElementById(
+          "activeCount"
+        ).textContent =
+          statistics.activeConsultations || 0;
+
+        document.getElementById(
+          "completedCount"
+        ).textContent =
+          statistics.completedConsultations || 0;
+
+        renderUpcomingAppointments(
+          data.upcomingAppointments || []
+        );
+
+        renderWaitingQueue(
+          data.waitingQueue || []
+        );
+
+        renderActiveConsultations(
+          data.activeConsultations || []
+        );
+
+        renderCompletedConsultations(
+          data.completedConsultations || []
+        );
+
+      } catch (error) {
+        console.error(
+          "Dashboard loading error:",
+          error
+        );
+
+        showError(
+          error.message ||
+          "Failed to load dashboard"
+        );
+
+        document.getElementById(
+          "upcomingContainer"
+        ).innerHTML =
+          `<div class="empty-message">
+            Failed to load appointments.
+          </div>`;
+
+        document.getElementById(
+          "queueContainer"
+        ).innerHTML =
+          `<div class="empty-message">
+            Failed to load queue.
+          </div>`;
+
+        document.getElementById(
+          "activeContainer"
+        ).innerHTML =
+          `<div class="empty-message">
+            Failed to load consultations.
+          </div>`;
+
+        document.getElementById(
+          "completedContainer"
+        ).innerHTML =
+          `<div class="empty-message">
+            Failed to load consultations.
+          </div>`;
+      }
+    }
+
+    function renderUpcomingAppointments(
+      appointments
+    ) {
+      const container =
+        document.getElementById(
+          "upcomingContainer"
+        );
+
+      if (!appointments.length) {
+        container.innerHTML =
+          `<div class="empty-message">
+            No upcoming appointments.
+          </div>`;
+        return;
+      }
+
+      let html = `
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Patient</th>
+                <th>Patient ID</th>
+                <th>Doctor</th>
+                <th>Department</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+      `;
+
+      appointments.forEach(
+        appointment => {
+          const status =
+            appointment.status || "";
+
+          const statusClass =
+            getStatusClass(status);
+
+          html += `
+            <tr>
+
+              <td>
+                ${escapeHtml(
+                  appointment.patient_name || "-"
+                )}
+              </td>
+
+              <td>
+                ${escapeHtml(
+                  appointment.patient_ref_code || "-"
+                )}
+              </td>
+
+              <td>
+                ${escapeHtml(
+                  appointment.doctor_name || "-"
+                )}
+              </td>
+
+              <td>
+                ${escapeHtml(
+                  appointment.department || "-"
+                )}
+              </td>
+
+              <td>
+                ${formatDate(
+                  appointment.scheduled_date
+                )}
+              </td>
+
+              <td>
+                ${formatTime(
+                  appointment.scheduled_time
+                )}
+              </td>
+
+              <td>
+                <span class="status status-${statusClass}">
+                  ${escapeHtml(
+                    status || "-"
+                  )}
+                </span>
+              </td>
+
+              <td>
+                <div class="action-buttons">
+
+                  ${
+                    status === "booked"
+                      ? `
+                        <button
+                          class="action-btn confirm-btn"
+                          id="confirm-${appointment.id}"
+                          onclick="confirmAppointment('${appointment.id}')"
+                        >
+                          Confirm
+                        </button>
+                      `
+                      : ""
+                  }
+
+                  ${
+                    status === "confirmed"
+                      ? `
+                        <button
+                          class="action-btn arrived-btn"
+                          id="arrived-${appointment.id}"
+                          onclick="markPatientArrived('${appointment.id}')"
+                        >
+                          Arrived
+                        </button>
+                      `
+                      : ""
+                  }
+
+                  ${
+                    status === "booked" ||
+                    status === "confirmed" ||
+                    status === "arrived"
+                      ? `
+                        <button
+                          class="action-btn checkin-btn"
+                          id="checkin-${appointment.id}"
+                          onclick="checkInPatient('${appointment.id}')"
+                        >
+                          Check-in
+                        </button>
+                      `
+                      : ""
+                  }
+
+                  ${
+                    status !== "booked" &&
+                    status !== "confirmed" &&
+                    status !== "arrived"
+                      ? "<span>-</span>"
+                      : ""
+                  }
+
+                </div>
+              </td>
+
+            </tr>
+          `;
+        }
+      );
+
+      html += `
+            </tbody>
+          </table>
+        </div>
+      `;
+
+      container.innerHTML =
+        html;
+    }
+
+    async function confirmAppointment(
+      appointmentId
+    ) {
+      const button =
+        document.getElementById(
+          `confirm-${appointmentId}`
+        );
+
+      if (button) {
+        button.disabled = true;
+        button.textContent =
+          "Confirming...";
+      }
+
+      try {
+        const response =
+          await apiRequest(
+            `/api/facility-staff/appointments/${appointmentId}/confirm`,
+            {
+              method: "PATCH"
+            }
+          );
+
+        if (response.status !== "success") {
+          throw new Error(
+            response.message ||
+            "Failed to confirm appointment"
+          );
+        }
+
+        showSuccess(
+          "Appointment confirmed successfully."
+        );
+
+        await loadDashboard();
+
+      } catch (error) {
+        console.error(
+          "Confirm appointment error:",
+          error
+        );
+
+        showError(
+          error.message ||
+          "Failed to confirm appointment"
+        );
+
+        if (button) {
+          button.disabled = false;
+          button.textContent =
+            "Confirm";
+        }
+      }
+    }
+
+    async function markPatientArrived(
+      appointmentId
+    ) {
+      const button =
+        document.getElementById(
+          `arrived-${appointmentId}`
+        );
+
+      if (button) {
+        button.disabled = true;
+        button.textContent =
+          "Updating...";
+      }
+
+      try {
+        const response =
+          await apiRequest(
+            `/api/facility-staff/appointments/${appointmentId}/arrived`,
+            {
+              method: "PATCH"
+            }
+          );
+
+        if (response.status !== "success") {
+          throw new Error(
+            response.message ||
+            "Failed to mark patient arrived"
+          );
+        }
+
+        showSuccess(
+          "Patient marked as arrived."
+        );
+
+        await loadDashboard();
+
+      } catch (error) {
+        console.error(
+          "Arrived error:",
+          error
+        );
+
+        showError(
+          error.message ||
+          "Failed to mark patient as arrived"
+        );
+
+        if (button) {
+          button.disabled = false;
+          button.textContent =
+            "Arrived";
+        }
+      }
+    }
+
+    async function checkInPatient(
+      appointmentId
+    ) {
+      const button =
+        document.getElementById(
+          `checkin-${appointmentId}`
+        );
+
+      if (button) {
+        button.disabled = true;
+        button.textContent =
+          "Checking in...";
+      }
+
+      try {
+        const response =
+          await apiRequest(
+            `/api/facility-staff/appointments/${appointmentId}/check-in`,
+            {
+              method: "PATCH"
+            }
+          );
+
+        if (response.status !== "success") {
+          throw new Error(
+            response.message ||
+            "Failed to check in patient"
+          );
+        }
+
+        const appointment =
+          response.data || {};
+
+        const queueNumber =
+          appointment.queue_number;
+
+        showSuccess(
+          queueNumber
+            ? `Patient checked in successfully. Queue Number: ${queueNumber}`
+            : "Patient checked in successfully."
+        );
+
+        await loadDashboard();
+
+      } catch (error) {
+        console.error(
+          "Check-in error:",
+          error
+        );
+
+        showError(
+          error.message ||
+          "Failed to check in patient"
+        );
+
+        if (button) {
+          button.disabled = false;
+          button.textContent =
+            "Check-in";
+        }
+      }
+    }
+
+    function renderWaitingQueue(queue) {
+      const container =
+        document.getElementById(
+          "queueContainer"
+        );
+
+      if (!queue.length) {
+        container.innerHTML =
+          `<div class="empty-message">
+            No patients waiting.
+          </div>`;
+        return;
+      }
+
+      let html = `
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Queue</th>
+                <th>Patient</th>
+                <th>Patient ID</th>
+                <th>Doctor</th>
+                <th>Department</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+      `;
+
+      queue.forEach(
+        patient => {
+          const statusClass =
+            getStatusClass(
+              patient.status
+            );
+
+          html += `
+            <tr>
+
+              <td>
+                <span class="queue-number">
+                  ${escapeHtml(
+                    patient.queue_number || "-"
+                  )}
+                </span>
+              </td>
+
+              <td>
+                ${escapeHtml(
+                  patient.patient_name || "-"
+                )}
+              </td>
+
+              <td>
+                ${escapeHtml(
+                  patient.patient_ref_code || "-"
+                )}
+              </td>
+
+              <td>
+                ${escapeHtml(
+                  patient.doctor_name || "-"
+                )}
+              </td>
+
+              <td>
+                ${escapeHtml(
+                  patient.department || "-"
+                )}
+              </td>
+
+              <td>
+                ${formatDate(
+                  patient.scheduled_date
+                )}
+              </td>
+
+              <td>
+                ${formatTime(
+                  patient.scheduled_time
+                )}
+              </td>
+
+              <td>
+                <span class="status status-${statusClass}">
+                  ${escapeHtml(
+                    patient.status || "-"
+                  )}
+                </span>
+              </td>
+
+            </tr>
+          `;
+        }
+      );
+
+      html += `
+            </tbody>
+          </table>
+        </div>
+      `;
+
+      container.innerHTML =
+        html;
+    }
+
+    function renderActiveConsultations(
+      consultations
+    ) {
+      const container =
+        document.getElementById(
+          "activeContainer"
+        );
+
+      if (!consultations.length) {
+        container.innerHTML =
+          `<div class="empty-message">
+            No active consultations.
+          </div>`;
+        return;
+      }
+
+      let html = `
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Patient</th>
+                <th>Patient ID</th>
+                <th>Doctor</th>
+                <th>Mode</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+      `;
+
+      consultations.forEach(
+        consultation => {
+          const statusClass =
+            getStatusClass(
+              consultation.status
+            );
+
+          html += `
+            <tr>
+
+              <td>
+                ${escapeHtml(
+                  consultation.patient_name || "-"
+                )}
+              </td>
+
+              <td>
+                ${escapeHtml(
+                  consultation.patient_ref_code || "-"
+                )}
+              </td>
+
+              <td>
+                ${escapeHtml(
+                  consultation.doctor_name || "-"
+                )}
+              </td>
+
+              <td>
+                ${escapeHtml(
+                  consultation.mode || "-"
+                )}
+              </td>
+
+              <td>
+                <span class="status status-${statusClass}">
+                  ${escapeHtml(
+                    consultation.status || "-"
+                  )}
+                </span>
+              </td>
+
+            </tr>
+          `;
+        }
+      );
+
+      html += `
+            </tbody>
+          </table>
+        </div>
+      `;
+
+      container.innerHTML =
+        html;
+    }
+
+    function renderCompletedConsultations(
+      consultations
+    ) {
+      const container =
+        document.getElementById(
+          "completedContainer"
+        );
+
+      if (!consultations.length) {
+        container.innerHTML =
+          `<div class="empty-message">
+            No completed consultations.
+          </div>`;
+        return;
+      }
+
+      let html = `
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Patient</th>
+                <th>Patient ID</th>
+                <th>Doctor</th>
+                <th>Diagnosis</th>
+                <th>Completed At</th>
+              </tr>
+            </thead>
+            <tbody>
+      `;
+
+      consultations.forEach(
+        consultation => {
+          html += `
+            <tr>
+
+              <td>
+                ${escapeHtml(
+                  consultation.patient_name || "-"
+                )}
+              </td>
+
+              <td>
+                ${escapeHtml(
+                  consultation.patient_ref_code || "-"
+                )}
+              </td>
+
+              <td>
+                ${escapeHtml(
+                  consultation.doctor_name || "-"
+                )}
+              </td>
+
+              <td>
+                ${escapeHtml(
+                  consultation.diagnosis || "-"
+                )}
+              </td>
+
+              <td>
+                ${
+                  consultation.completed_at
+                    ? new Date(
+                        consultation.completed_at
+                      ).toLocaleString("en-IN")
+                    : "-"
+                }
+              </td>
+
+            </tr>
+          `;
+        }
+      );
+
+      html += `
+            </tbody>
+          </table>
+        </div>
+      `;
+
+      container.innerHTML =
+        html;
+    }
+
+    async function loadDiagnosticRequests() {
+      const container =
+        document.getElementById(
+          "diagnosticRequestsContainer"
+        );
+
+      container.innerHTML =
+        `<div class="loading">
+          Loading diagnostic requests...
+        </div>`;
+
+      try {
+        const response =
+          await apiRequest(
+            "/api/diagnostics/facility/requests"
+          );
+
+        renderDiagnosticRequests(
+          response.data || []
+        );
+
+      } catch (error) {
+        console.error(
+          "Diagnostic requests error:",
+          error
+        );
+
+        container.innerHTML =
+          `<div class="empty-message">
+            ${escapeHtml(
+              error.message ||
+              "Failed to load diagnostic requests"
+            )}
+          </div>`;
+      }
+    }
+
+    function renderDiagnosticRequests(
+      requests
+    ) {
+      const container =
+        document.getElementById(
+          "diagnosticRequestsContainer"
+        );
+
+      if (!requests.length) {
+        container.innerHTML =
+          `<div class="empty-message">
+            No diagnostic requests found.
+          </div>`;
+        return;
+      }
+
+      let html = `
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Patient</th>
+                <th>Patient ID</th>
+                <th>Test</th>
+                <th>Requested Date</th>
+                <th>Status</th>
+                <th>Update Status</th>
+                <th>Report</th>
+              </tr>
+            </thead>
+            <tbody>
+      `;
+
+      requests.forEach(
+        request => {
+          const status =
+            request.status || "requested";
+
+          const statusClass =
+            getStatusClass(status);
+
+          const report =
+            request.latest_report || null;
+
+          html += `
+            <tr>
+
+              <td>
+                <strong>
+                  ${escapeHtml(
+                    request.patient_name || "-"
+                  )}
+                </strong>
+
+                ${
+                  request.phone_number
+                    ? `
+                      <div class="small-text">
+                        ${escapeHtml(
+                          request.phone_number
+                        )}
+                      </div>
+                    `
+                    : ""
+                }
+              </td>
+
+              <td>
+                ${escapeHtml(
+                  request.patient_ref_code || "-"
+                )}
+              </td>
+
+              <td>
+                ${escapeHtml(
+                  request.test_name || "-"
+                )}
+              </td>
+
+              <td>
+                ${
+                  request.requested_at
+                    ? new Date(
+                        request.requested_at
+                      ).toLocaleString("en-IN")
+                    : "-"
+                }
+              </td>
+
+              <td>
+                <span class="status status-${statusClass}">
+                  ${escapeHtml(status)}
+                </span>
+              </td>
+
+              <td>
+
+                <div class="availability-form">
+
+                  <select
+                    id="diagnostic-status-${request.id}"
+                  >
+
+                    <option
+                      value="requested"
+                      ${status === "requested" ? "selected" : ""}
+                    >
+                      Requested
+                    </option>
+
+                    <option
+                      value="scheduled"
+                      ${status === "scheduled" ? "selected" : ""}
+                    >
+                      Scheduled
+                    </option>
+
+                    <option
+                      value="sample_collected"
+                      ${status === "sample_collected" ? "selected" : ""}
+                    >
+                      Sample Collected
+                    </option>
+
+                    <option
+                      value="in_progress"
+                      ${status === "in_progress" ? "selected" : ""}
+                    >
+                      In Progress
+                    </option>
+
+                    <option
+                      value="completed"
+                      ${status === "completed" ? "selected" : ""}
+                    >
+                      Completed
+                    </option>
+
+                    <option
+                      value="cancelled"
+                      ${status === "cancelled" ? "selected" : ""}
+                    >
+                      Cancelled
+                    </option>
+
+                  </select>
+
+                  <button
+                    class="action-btn diagnostic-update-btn"
+                    onclick="updateDiagnosticStatus('${request.id}')"
+                  >
+                    Update
+                  </button>
+
+                </div>
+
+              </td>
+
+              <td>
+
+                <div class="report-form">
+
+                  <textarea
+                    id="report-summary-${request.id}"
+                    placeholder="Enter diagnostic result..."
+                  >${report ? escapeHtml(report.result_summary || "") : ""}</textarea>
+
+                  <input
+                    type="url"
+                    id="report-url-${request.id}"
+                    placeholder="Report URL (optional)"
+                    value="${report ? escapeHtml(report.report_file_url || "") : ""}"
+                  >
+
+                  <button
+                    class="action-btn report-btn"
+                    onclick="submitDiagnosticReport('${request.id}')"
+                  >
+                    Save Report
+                  </button>
+
+                  ${
+                    report &&
+                    report.report_file_url
+                      ? `
+                        <div class="report-box">
+
+                          <strong>
+                            Existing Report:
+                          </strong>
+
+                          <br>
+
+                          <a
+                            href="${escapeHtml(
+                              report.report_file_url
+                            )}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            View Report
+                          </a>
+
+                        </div>
+                      `
+                      : ""
+                  }
+
+                </div>
+
+              </td>
+
+            </tr>
+          `;
+        }
+      );
+
+      html += `
+            </tbody>
+          </table>
+        </div>
+      `;
+
+      container.innerHTML =
+        html;
+    }
+
+    async function updateDiagnosticStatus(
+      requestId
+    ) {
+      const select =
+        document.getElementById(
+          `diagnostic-status-${requestId}`
+        );
+
+      if (!select) {
+        showError(
+          "Diagnostic status selector not found."
+        );
+        return;
+      }
+
+      const newStatus =
+        select.value;
+
+      try {
+        const response =
+          await apiRequest(
+            `/api/diagnostics/facility/${requestId}/status`,
+            {
+              method: "PATCH",
+              body: JSON.stringify({
+                status: newStatus
+              })
+            }
+          );
+
+        if (response.status !== "success") {
+          throw new Error(
+            response.message ||
+            "Failed to update diagnostic status"
+          );
+        }
+
+        showSuccess(
+          "Diagnostic status updated successfully."
+        );
+
+        await loadDiagnosticRequests();
+
+      } catch (error) {
+        console.error(
+          "Diagnostic status update error:",
+          error
+        );
+
+        showError(
+          error.message ||
+          "Failed to update diagnostic status"
+        );
+      }
+    }
+
+    async function submitDiagnosticReport(
+      requestId
+    ) {
+      const summaryInput =
+        document.getElementById(
+          `report-summary-${requestId}`
+        );
+
+      const urlInput =
+        document.getElementById(
+          `report-url-${requestId}`
+        );
+
+      if (!summaryInput || !urlInput) {
+        showError(
+          "Diagnostic report fields not found."
+        );
+        return;
+      }
+
+      const resultSummary =
+        summaryInput.value.trim();
+
+      const reportFileUrl =
+        urlInput.value.trim();
+
+      if (!resultSummary) {
+        showError(
+          "Please enter the diagnostic result."
+        );
+
+        summaryInput.focus();
+        return;
+      }
+
+      try {
+        const response =
+          await apiRequest(
+            `/api/diagnostics/${requestId}/report`,
+            {
+              method: "POST",
+              body: JSON.stringify({
+                result_summary:
+                  resultSummary,
+
+                report_file_url:
+                  reportFileUrl || null
+              })
+            }
+          );
+
+        if (response.status !== "success") {
+          throw new Error(
+            response.message ||
+            "Failed to save diagnostic report"
+          );
+        }
+
+        showSuccess(
+          "Diagnostic report saved successfully."
+        );
+
+        await loadDiagnosticRequests();
+
+      } catch (error) {
+        console.error(
+          "Diagnostic report error:",
+          error
+        );
+
+        showError(
+          error.message ||
+          "Failed to save diagnostic report"
+        );
+      }
+    }
+
+    async function loadDiagnosticAvailability() {
+      const container =
+        document.getElementById(
+          "diagnosticAvailabilityContainer"
+        );
+
+      container.innerHTML =
+        `<div class="loading">
+          Loading diagnostic availability...
+        </div>`;
+
+      try {
+        const response =
+          await apiRequest(
+            "/api/diagnostics/facility/availability"
+          );
+
+        renderDiagnosticAvailability(
+          response.data || []
+        );
+
+      } catch (error) {
+        console.error(
+          "Diagnostic availability error:",
+          error
+        );
+
+        container.innerHTML =
+          `<div class="empty-message">
+            ${escapeHtml(
+              error.message ||
+              "Failed to load diagnostic availability"
+            )}
+          </div>`;
+      }
+    }
+
+    function renderDiagnosticAvailability(
+      availability
+    ) {
+      const container =
+        document.getElementById(
+          "diagnosticAvailabilityContainer"
+        );
+
+      if (!availability.length) {
+        container.innerHTML =
+          `<div class="empty-message">
+            No diagnostic availability records found.
+          </div>`;
+        return;
+      }
+
+      let html = `
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Test Name</th>
+                <th>Status</th>
+                <th>Reason</th>
+                <th>Last Updated</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+      `;
+
+      availability.forEach(
+        item => {
+          const status =
+            item.status || "available";
+
+          const statusClass =
+            getStatusClass(status);
+
+          html += `
+            <tr>
+
+              <td>
+                <strong>
+                  ${escapeHtml(
+                    item.test_name || "-"
+                  )}
+                </strong>
+              </td>
+
+              <td>
+                <span class="status status-${statusClass}">
+                  ${escapeHtml(status)}
+                </span>
+              </td>
+
+              <td>
+                ${escapeHtml(
+                  item.unavailable_reason || "-"
+                )}
+              </td>
+
+              <td>
+                ${
+                  item.updated_at
+                    ? new Date(
+                        item.updated_at
+                      ).toLocaleString("en-IN")
+                    : "-"
+                }
+              </td>
+
+              <td>
+
+                <div class="availability-form">
+
+                  <select
+                    id="availability-status-${item.id}"
+                  >
+
+                    <option
+                      value="available"
+                      ${status === "available" ? "selected" : ""}
+                    >
+                      Available
+                    </option>
+
+                    <option
+                      value="low_stock"
+                      ${status === "low_stock" ? "selected" : ""}
+                    >
+                      Low Stock
+                    </option>
+
+                    <option
+                      value="out_of_stock"
+                      ${status === "out_of_stock" ? "selected" : ""}
+                    >
+                      Out of Stock
+                    </option>
+
+                    <option
+                      value="limited"
+                      ${status === "limited" ? "selected" : ""}
+                    >
+                      Limited
+                    </option>
+
+                    <option
+                      value="unavailable"
+                      ${status === "unavailable" ? "selected" : ""}
+                    >
+                      Unavailable
+                    </option>
+
+                    <option
+                      value="temporarily_unavailable"
+                      ${status === "temporarily_unavailable" ? "selected" : ""}
+                    >
+                      Temporarily Unavailable
+                    </option>
+
+                  </select>
+
+                  <input
+                    type="text"
+                    id="availability-reason-${item.id}"
+                    placeholder="Reason"
+                    value="${escapeHtml(
+                      item.unavailable_reason || ""
+                    )}"
+                  >
+
+                  <button
+                    class="action-btn availability-btn"
+                    onclick="updateDiagnosticAvailability('${item.id}')"
+                  >
+                    Update
+                  </button>
+
+                </div>
+
+              </td>
+
+            </tr>
+          `;
+        }
+      );
+
+      html += `
+            </tbody>
+          </table>
+        </div>
+      `;
+
+      container.innerHTML =
+        html;
+    }
+
+    async function updateDiagnosticAvailability(
+      availabilityId
+    ) {
+      const statusSelect =
+        document.getElementById(
+          `availability-status-${availabilityId}`
+        );
+
+      const reasonInput =
+        document.getElementById(
+          `availability-reason-${availabilityId}`
+        );
+
+      if (!statusSelect || !reasonInput) {
+        showError(
+          "Availability fields not found."
+        );
+        return;
+      }
+
+      const status =
+        statusSelect.value;
+
+      const unavailableReason =
+        reasonInput.value.trim();
+
+      try {
+        const response =
+          await apiRequest(
+            `/api/diagnostics/facility/availability/${availabilityId}`,
+            {
+              method: "PATCH",
+              body: JSON.stringify({
+                status,
+                unavailable_reason:
+                  unavailableReason
+              })
+            }
+          );
+
+        if (response.status !== "success") {
+          throw new Error(
+            response.message ||
+            "Failed to update diagnostic availability"
+          );
+        }
+
+        showSuccess(
+          "Diagnostic availability updated successfully."
+        );
+
+        await loadDiagnosticAvailability();
+
+      } catch (error) {
+        console.error(
+          "Diagnostic availability update error:",
+          error
+        );
+
+        showError(
+          error.message ||
+          "Failed to update diagnostic availability"
+        );
+      }
+    }
+
+    async function loadIncomingReferrals() {
+      const container =
+        document.getElementById(
+          "incomingReferralsContainer"
+        );
+
+      container.innerHTML =
+        `<div class="loading">
+          Loading incoming referrals...
+        </div>`;
+
+      try {
+        const response =
+          await apiRequest(
+            "/api/referrals/facility/incoming"
+          );
+
+        renderIncomingReferrals(
+          response.data || []
+        );
+
+      } catch (error) {
+        console.error(
+          "Incoming referrals error:",
+          error
+        );
+
+        container.innerHTML =
+          `<div class="empty-message">
+            ${escapeHtml(
+              error.message ||
+              "Failed to load incoming referrals"
+            )}
+          </div>`;
+      }
+    }
+
+    function renderIncomingReferrals(
+      referrals
+    ) {
+      const container =
+        document.getElementById(
+          "incomingReferralsContainer"
+        );
+
+      if (!referrals.length) {
+        container.innerHTML =
+          `<div class="empty-message">
+            No incoming referrals found.
+          </div>`;
+        return;
+      }
+
+      let html = `
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Patient</th>
+                <th>Patient ID</th>
+                <th>Phone</th>
+                <th>Referring Facility</th>
+                <th>Department</th>
+                <th>Reason</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Created</th>
+                <th>Update Status</th>
+              </tr>
+            </thead>
+            <tbody>
+      `;
+
+      referrals.forEach(
+        referral => {
+          const status =
+            referral.status || "created";
+
+          const priority =
+            referral.priority || "normal";
+
+          const statusClass =
+            getStatusClass(status);
+
+          const priorityClass =
+            getStatusClass(priority);
+
+          html += `
+            <tr>
+
+              <td>
+                <strong>
+                  ${escapeHtml(
+                    referral.patient_name || "-"
+                  )}
+                </strong>
+              </td>
+
+              <td>
+                ${escapeHtml(
+                  referral.patient_ref_code || "-"
+                )}
+              </td>
+
+              <td>
+                ${escapeHtml(
+                  referral.phone_number || "-"
+                )}
+              </td>
+
+              <td>
+                ${escapeHtml(
+                  referral.referring_facility_name || "-"
+                )}
+              </td>
+
+              <td>
+                ${escapeHtml(
+                  referral.required_department || "-"
+                )}
+              </td>
+
+              <td>
+                ${escapeHtml(
+                  referral.reason || "-"
+                )}
+              </td>
+
+              <td>
+                <span
+                  class="priority priority-${priorityClass}"
+                >
+                  ${escapeHtml(
+                    priority.toUpperCase()
+                  )}
+                </span>
+              </td>
+
+              <td>
+                <span
+                  class="status status-${statusClass}"
+                >
+                  ${escapeHtml(
+                    status.replaceAll("_", " ")
+                  )}
+                </span>
+              </td>
+
+              <td>
+                ${
+                  referral.created_at
+                    ? new Date(
+                        referral.created_at
+                      ).toLocaleString("en-IN")
+                    : "-"
+                }
+              </td>
+
+              <td>
+
+                <div class="referral-status-form">
+
+                  <select
+                    id="referral-status-${referral.id}"
+                  >
+
+                    <option
+                      value="created"
+                      ${status === "created" ? "selected" : ""}
+                    >
+                      Created
+                    </option>
+
+                    <option
+                      value="sent"
+                      ${status === "sent" ? "selected" : ""}
+                    >
+                      Sent
+                    </option>
+
+                    <option
+                      value="received"
+                      ${status === "received" ? "selected" : ""}
+                    >
+                      Received
+                    </option>
+
+                    <option
+                      value="accepted"
+                      ${status === "accepted" ? "selected" : ""}
+                    >
+                      Accepted
+                    </option>
+
+                    <option
+                      value="scheduled"
+                      ${status === "scheduled" ? "selected" : ""}
+                    >
+                      Scheduled
+                    </option>
+
+                    <option
+                      value="patient_arrived"
+                      ${status === "patient_arrived" ? "selected" : ""}
+                    >
+                      Patient Arrived
+                    </option>
+
+                    <option
+                      value="completed"
+                      ${status === "completed" ? "selected" : ""}
+                    >
+                      Completed
+                    </option>
+
+                    <option
+                      value="cancelled"
+                      ${status === "cancelled" ? "selected" : ""}
+                    >
+                      Cancelled
+                    </option>
+
+                  </select>
+
+                  <button
+                    class="action-btn referral-update-btn"
+                    onclick="updateReferralStatus('${referral.id}')"
+                  >
+                    Update
+                  </button>
+
+                </div>
+
+              </td>
+
+            </tr>
+          `;
+        }
+      );
+
+      html += `
+            </tbody>
+          </table>
+        </div>
+      `;
+
+      container.innerHTML =
+        html;
+    }
+
+    async function updateReferralStatus(
+      referralId
+    ) {
+      const select =
+        document.getElementById(
+          `referral-status-${referralId}`
+        );
+
+      if (!select) {
+        showError(
+          "Referral status selector not found."
+        );
+        return;
+      }
+
+      const newStatus =
+        select.value;
+
+      try {
+        const response =
+          await apiRequest(
+            `/api/referrals/facility/${referralId}/status`,
+            {
+              method: "PATCH",
+              body: JSON.stringify({
+                status: newStatus
+              })
+            }
+          );
+
+        if (response.status !== "success") {
+          throw new Error(
+            response.message ||
+            "Failed to update referral status"
+          );
+        }
+
+        showSuccess(
+          "Referral status updated successfully."
+        );
+
+        await loadIncomingReferrals();
+
+      } catch (error) {
+        console.error(
+          "Referral status update error:",
+          error
+        );
+
+        showError(
+          error.message ||
+          "Failed to update referral status"
+        );
+      }
+    }
+
+    function handleSearchKey(event) {
+      if (event.key === "Enter") {
+        searchPatients();
+      }
+    }
+
+    async function searchPatients() {
+      const input =
+        document.getElementById(
+          "patientSearch"
+        );
+
+      const results =
+        document.getElementById(
+          "searchResults"
+        );
+
+      if (!input || !results) {
+        return;
+      }
+
+      const query =
+        input.value.trim();
+
+      if (!query) {
+        results.innerHTML =
+          `<div class="empty-message">
+            Enter a patient name, ID or phone number.
+          </div>`;
+        return;
+      }
+
+      results.innerHTML =
+        `<div class="loading">
+          Searching...
+        </div>`;
+
+      try {
+        const response =
+          await apiRequest(
+            `/api/facility-staff/patients/search?q=${encodeURIComponent(query)}`
+          );
+
+        const patients =
+          response.data || [];
+
+        if (!patients.length) {
+          results.innerHTML =
+            `<div class="empty-message">
+              No patients found.
+            </div>`;
+          return;
+        }
+
+        let html = `
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Patient ID</th>
+                  <th>Name</th>
+                  <th>Phone</th>
+                  <th>Village</th>
+                  <th>District</th>
+                  <th>Gender</th>
+                  <th>Age</th>
+                  <th>Blood Group</th>
+                  <th>Language</th>
+                </tr>
+              </thead>
+              <tbody>
+        `;
+
+        patients.forEach(
+          patient => {
+            html += `
+              <tr>
+
+                <td>
+                  ${escapeHtml(
+                    patient.patient_ref_code || "-"
+                  )}
+                </td>
+
+                <td>
+                  <strong>
+                    ${escapeHtml(
+                      patient.full_name || "-"
+                    )}
+                  </strong>
+                </td>
+
+                <td>
+                  ${escapeHtml(
+                    patient.phone_number || "-"
+                  )}
+                </td>
+
+                <td>
+                  ${escapeHtml(
+                    patient.village || "-"
+                  )}
+                </td>
+
+                <td>
+                  ${escapeHtml(
+                    patient.district || "-"
+                  )}
+                </td>
+
+                <td>
+                  ${escapeHtml(
+                    patient.gender || "-"
+                  )}
+                </td>
+
+                <td>
+                  ${escapeHtml(
+                    patient.approximate_age ?? "N/A"
+                  )}
+                </td>
+
+                <td>
+                  ${escapeHtml(
+                    patient.blood_group || "N/A"
+                  )}
+                </td>
+
+                <td>
+                  ${escapeHtml(
+                    patient.preferred_language || "-"
+                  )}
+                </td>
+
+              </tr>
+            `;
+          }
+        );
+
+        html += `
+              </tbody>
+            </table>
+          </div>
+        `;
+
+        results.innerHTML =
+          html;
+
+      } catch (error) {
+        console.error(
+          "Patient search error:",
+          error
+        );
+
+        results.innerHTML =
+          `<div class="empty-message">
+            ${escapeHtml(
+              error.message ||
+              "Failed to search patients"
+            )}
+          </div>`;
+      }
+    }
+
+    async function loadProfile() {
+      const container =
+        document.getElementById(
+          "profileContainer"
+        );
+
+      container.innerHTML =
+        `<div class="loading">
+          Loading profile...
+        </div>`;
+
+      try {
+        const response =
+          await apiRequest(
+            "/api/facility-staff/profile"
+          );
+
+        const profile =
+          response.data || {};
+
+        container.innerHTML = `
+          <div class="profile-grid">
+
+            <div class="profile-box">
+              <strong>Full Name</strong>
+              <span>
+                ${escapeHtml(
+                  profile.full_name || "-"
+                )}
+              </span>
+            </div>
+
+            <div class="profile-box">
+              <strong>Email</strong>
+              <span>
+                ${escapeHtml(
+                  profile.email || "-"
+                )}
+              </span>
+            </div>
+
+            <div class="profile-box">
+              <strong>Phone</strong>
+              <span>
+                ${escapeHtml(
+                  profile.phone_number || "N/A"
+                )}
+              </span>
+            </div>
+
+            <div class="profile-box">
+              <strong>Role</strong>
+              <span>
+                ${escapeHtml(
+                  profile.role || "-"
+                )}
+              </span>
+            </div>
+
+            <div class="profile-box">
+              <strong>Language</strong>
+              <span>
+                ${escapeHtml(
+                  profile.preferred_language || "-"
+                )}
+              </span>
+            </div>
+
+            <div class="profile-box">
+              <strong>Account Status</strong>
+              <span>
+                ${
+                  profile.is_active
+                    ? "Active"
+                    : "Inactive"
+                }
+              </span>
+            </div>
+
+          </div>
+        `;
+
+      } catch (error) {
+        console.error(
+          "Profile loading error:",
+          error
+        );
+
+        container.innerHTML =
+          `<div class="empty-message">
+            Failed to load profile.
+          </div>`;
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem(
+        "gramarogya_token"
+      );
+
+      window.location.href =
+        "gramarogya_login.html";
+    }
+
+    function escapeHtml(value) {
+      if (
+        value === null ||
+        value === undefined
+      ) {
+        return "";
+      }
+
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      async () => {
+
+        if (!checkAuthentication()) {
+          return;
+        }
+
+        await loadDashboard();
+
+        await loadDiagnosticRequests();
+
+        await loadDiagnosticAvailability();
+
+        await loadIncomingReferrals();
+
+        await loadProfile();
+
+      }
+    );
+  </script>
+
+</body>
+</html>
