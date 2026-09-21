@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>GramArogya — Login</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Hind:wght@400;500;600;700&display=swap');
+
+:root{
+  --teal-900:#0F3B34;
+  --teal-700:#14584D;
+  --teal-600:#1B6E60;
+  --marigold-500:#E8A33D;
+  --marigold-600:#D18F2A;
+  --cream-50:#FBF8F2;
+  --cream-100:#F3EDE0;
+  --charcoal-900:#25231F;
+  --charcoal-600:#5B564C;
+  --sage-500:#7FA684;
+  --line:#E2DACB;
+  --radius:10px;
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:'Hind',sans-serif;
+  background:var(--cream-50);
+  color:var(--charcoal-900);
+  min-height:100vh;
+  display:flex;
+}
+
+/* ---------- Left brand panel ---------- */
+.brand-panel{
+  flex:1 1 46%;
+  background:var(--teal-900);
+  color:var(--cream-50);
+  position:relative;
+  padding:56px 56px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  overflow:hidden;
+  min-height:100vh;
+}
+.brand-mark{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-family:'Source Serif 4',serif;
+  font-size:22px;
+  font-weight:600;
+  letter-spacing:0.2px;
+}
+.brand-mark svg{flex-shrink:0;}
+
+.brand-copy{position:relative;z-index:2;max-width:440px;}
+.brand-copy h1{
+  font-family:'Source Serif 4',serif;
+  font-weight:600;
+  font-size:40px;
+  line-height:1.22;
+  margin:0 0 18px 0;
+  color:#FDFBF6;
+}
+.brand-copy p{
+  font-size:17px;
+  line-height:1.6;
+  color:#CFE3DD;
+  margin:0;
+  max-width:380px;
+}
+
+.terrain{
+  position:absolute;
+  left:0; right:0; bottom:0;
+  z-index:1;
+  opacity:0.9;
+}
+
+.brand-foot{
+  position:relative;
+  z-index:2;
+  display:flex;
+  gap:28px;
+  font-size:13.5px;
+  color:#9FC3B9;
+  border-top:1px solid rgba(255,255,255,0.14);
+  padding-top:18px;
+}
+.brand-foot strong{color:#E9DCC2;font-weight:600;}
+
+/* ---------- Right auth panel ---------- */
+.auth-panel{
+  flex:1 1 54%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:48px 32px;
+}
+
+.lang-switch{
+  align-self:flex-end;
+  margin:0 0 28px 0;
+  display:flex;
+  gap:4px;
+  background:var(--cream-100);
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:4px;
+}
+.lang-switch button{
+  border:none;
+  background:transparent;
+  padding:6px 14px;
+  border-radius:999px;
+  font-family:'Hind',sans-serif;
+  font-size:13.5px;
+  font-weight:600;
+  color:var(--charcoal-600);
+  cursor:pointer;
+}
+.lang-switch button.active{
+  background:var(--teal-900);
+  color:#fff;
+}
+
+.card{
+  width:100%;
+  max-width:400px;
+}
+
+.card h2{
+  font-family:'Source Serif 4',serif;
+  font-weight:600;
+  font-size:26px;
+  margin:0 0 6px 0;
+}
+.card .sub{
+  color:var(--charcoal-600);
+  font-size:15px;
+  margin:0 0 28px 0;
+  line-height:1.5;
+}
+
+/* Role selector */
+.role-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-bottom:26px;
+}
+.role-card{
+  border:1.5px solid var(--line);
+  background:#fff;
+  border-radius:var(--radius);
+  padding:13px 12px;
+  cursor:pointer;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  transition:border-color .15s ease, background .15s ease;
+}
+.role-card:hover{border-color:var(--marigold-500);}
+.role-card.selected{
+  border-color:var(--teal-700);
+  background:#F1F6F4;
+}
+.role-card .icon{font-size:18px;}
+.role-card .label{font-size:13.5px;font-weight:600;color:var(--charcoal-900);}
+
+/* Form */
+label{
+  display:block;
+  font-size:13px;
+  font-weight:600;
+  color:var(--charcoal-600);
+  margin-bottom:7px;
+}
+.phone-row{
+  display:flex;
+  border:1.5px solid var(--line);
+  border-radius:var(--radius);
+  overflow:hidden;
+  margin-bottom:18px;
+  background:#fff;
+}
+.phone-row .cc{
+  padding:12px 12px;
+  background:var(--cream-100);
+  font-size:15px;
+  color:var(--charcoal-600);
+  border-right:1.5px solid var(--line);
+  font-weight:600;
+}
+.phone-row input{
+  flex:1;
+  border:none;
+  padding:12px 14px;
+  font-size:15.5px;
+  font-family:'Hind',sans-serif;
+  outline:none;
+  background:transparent;
+  color:var(--charcoal-900);
+  letter-spacing:0.4px;
+}
+
+.otp-row{
+  display:flex;
+  gap:8px;
+  margin-bottom:8px;
+}
+.otp-row input{
+  width:44px;
+  height:52px;
+  text-align:center;
+  font-size:20px;
+  border:1.5px solid var(--line);
+  border-radius:8px;
+  font-family:'Hind',sans-serif;
+  font-weight:600;
+  outline:none;
+  color:var(--teal-900);
+}
+.otp-row input:focus{border-color:var(--teal-700);}
+
+.otp-meta{
+  font-size:13px;
+  color:var(--charcoal-600);
+  margin-bottom:22px;
+}
+.otp-meta button{
+  background:none;border:none;color:var(--teal-700);
+  font-weight:600;cursor:pointer;padding:0;font-size:13px;
+}
+
+.btn-primary{
+  width:100%;
+  background:var(--teal-900);
+  color:#fff;
+  border:none;
+  border-radius:var(--radius);
+  padding:14px;
+  font-size:15.5px;
+  font-weight:600;
+  font-family:'Hind',sans-serif;
+  cursor:pointer;
+  transition:background .15s ease;
+}
+.btn-primary:hover{background:var(--teal-700);}
+.btn-primary:disabled{background:#C9C2B3;cursor:not-allowed;}
+
+.divider{
+  display:flex;align-items:center;gap:12px;
+  margin:22px 0;color:var(--charcoal-600);font-size:12.5px;
+}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line);}
+
+.link-row{
+  text-align:center;
+  font-size:13.5px;
+  color:var(--charcoal-600);
+  margin-top:22px;
+}
+.link-row a{color:var(--teal-700);font-weight:600;text-decoration:none;}
+
+.step-back{
+  background:none;border:none;color:var(--charcoal-600);
+  font-size:13.5px;cursor:pointer;padding:0;margin-bottom:18px;
+  display:flex;align-items:center;gap:6px;
+}
+
+.hidden{display:none !important;}
+
+@media (max-width:860px){
+  body{flex-direction:column;}
+  .brand-panel{min-height:280px;padding:36px 28px;}
+  .brand-copy h1{font-size:28px;}
+  .auth-panel{padding:36px 22px;}
+}
+</style>
+</head>
+<body>
+
+<div class="brand-panel">
+  <div class="brand-mark">
+    <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+      <circle cx="13" cy="13" r="12" stroke="#E8A33D" stroke-width="1.6"/>
+      <path d="M13 7v12M7 13h12" stroke="#E8A33D" stroke-width="1.6" stroke-linecap="round"/>
+    </svg>
+    <span data-i18n="brandName">GramArogya</span>
+  </div>
+
+  <div class="brand-copy">
+    <h1 data-i18n="brandHeadline">Healthcare that reaches every village.</h1>
+    <p data-i18n="brandSub">One login connects patients, ASHA workers, doctors and health facilities — even where the network doesn't always reach.</p>
+  </div>
+
+  <svg class="terrain" viewBox="0 0 640 160" preserveAspectRatio="none" height="150" width="100%">
+    <path d="M0 120 C 90 80, 160 140, 240 100 S 380 60, 460 100 S 560 130, 640 90 V160 H0 Z" fill="#123F37"/>
+    <path d="M0 140 C 100 110, 200 150, 300 120 S 460 100, 640 130 V160 H0 Z" fill="#0C332C"/>
+  </svg>
+
+  <div class="brand-foot">
+    <span><strong data-i18n="statFacilities">48</strong> <span data-i18n="statFacilitiesLabel">facilities connected</span></span>
+    <span><strong data-i18n="statLanguages">3</strong> <span data-i18n="statLanguagesLabel">languages supported</span></span>
+    <span><span data-i18n="statOffline">Works offline</span></span>
+  </div>
+</div>
+
+<div class="auth-panel">
+  <div class="lang-switch" role="group" aria-label="Language">
+    <button data-lang="en" class="active">English</button>
+    <button data-lang="hi">हिंदी</button>
+    <button data-lang="mr">मराठी</button>
+  </div>
+
+  <div class="card">
+
+    <!-- STEP 1: ROLE SELECT -->
+    <div id="step-role">
+      <h2 data-i18n="chooseRoleTitle">Who's signing in?</h2>
+      <p class="sub" data-i18n="chooseRoleSub">Select your role to continue to the right dashboard.</p>
+
+      <div class="role-grid">
+        <div class="role-card" data-role="patient">
+          <span class="icon">🧑‍🤝‍🧑</span>
+          <span class="label" data-i18n="rolePatient">Patient</span>
+        </div>
+        <div class="role-card" data-role="frontline_worker">
+          <span class="icon">🩺</span>
+          <span class="label" data-i18n="roleWorker">ASHA / ANM Worker</span>
+        </div>
+        <div class="role-card" data-role="doctor">
+          <span class="icon">⚕️</span>
+          <span class="label" data-i18n="roleDoctor">Doctor</span>
+        </div>
+        <div class="role-card" data-role="facility_staff">
+          <span class="icon">🏥</span>
+          <span class="label" data-i18n="roleFacility">Facility Staff</span>
+        </div>
+        <div class="role-card" data-role="district_admin" style="grid-column:1/-1;">
+          <span class="icon">📊</span>
+          <span class="label" data-i18n="roleAdmin">District Administrator</span>
+        </div>
+      </div>
+
+      <button class="btn-primary" id="continue-role" disabled data-i18n="continueBtn">Continue</button>
+    </div>
+
+    <!-- STEP 2: PHONE -->
+    <div id="step-phone" class="hidden">
+      <button class="step-back" id="back-to-role">← <span data-i18n="back">Back</span></button>
+      <h2 data-i18n="enterPhoneTitle">Enter your phone number</h2>
+      <p class="sub" data-i18n="enterPhoneSub">We'll send a one-time code to verify it's you.</p>
+
+      <label data-i18n="phoneLabel">Mobile number</label>
+      <div class="phone-row">
+        <span class="cc">+91</span>
+        <input type="tel" id="phone-input" maxlength="10" placeholder="98765 43210" inputmode="numeric">
+      </div>
+
+      <button class="btn-primary" id="send-otp" data-i18n="sendOtpBtn">Send OTP</button>
+
+      <div class="divider" data-i18n="orDivider">or</div>
+      <button class="btn-primary" style="background:#fff;color:var(--teal-900);border:1.5px solid var(--line);" id="use-password" data-i18n="usePasswordBtn">Sign in with password instead</button>
+    </div>
+
+    <!-- STEP 3: OTP -->
+    <div id="step-otp" class="hidden">
+      <button class="step-back" id="back-to-phone">← <span data-i18n="back">Back</span></button>
+      <h2 data-i18n="enterOtpTitle">Enter the 4-digit code</h2>
+      <p class="sub" id="otp-sub-text">Sent to +91 XXXXX XXXXX</p>
+
+      <div class="otp-row">
+        <input maxlength="1" inputmode="numeric">
+        <input maxlength="1" inputmode="numeric">
+        <input maxlength="1" inputmode="numeric">
+        <input maxlength="1" inputmode="numeric">
+      </div>
+      <div class="otp-meta">
+        <span data-i18n="noCode">Didn't get a code?</span> <button id="resend-otp" data-i18n="resend">Resend</button>
+      </div>
+
+      <button class="btn-primary" id="verify-otp" data-i18n="verifyBtn">Verify &amp; Continue</button>
+    </div>
+
+    <div class="link-row" data-i18n="helpLine">
+      Need help? Ask your ASHA worker or call the GramArogya helpline.
+    </div>
+  </div>
+</div>
+
+<script>
+const translations = {
+  en: {
+    brandName:"GramArogya",
+    brandHeadline:"Healthcare that reaches every village.",
+    brandSub:"One login connects patients, ASHA workers, doctors and health facilities — even where the network doesn't always reach.",
+    statFacilitiesLabel:"facilities connected",
+    statLanguagesLabel:"languages supported",
+    statOffline:"Works offline",
+    chooseRoleTitle:"Who's signing in?",
+    chooseRoleSub:"Select your role to continue to the right dashboard.",
+    rolePatient:"Patient",
+    roleWorker:"ASHA / ANM Worker",
+    roleDoctor:"Doctor",
+    roleFacility:"Facility Staff",
+    roleAdmin:"District Administrator",
+    continueBtn:"Continue",
+    back:"Back",
+    enterPhoneTitle:"Enter your phone number",
+    enterPhoneSub:"We'll send a one-time code to verify it's you.",
+    phoneLabel:"Mobile number",
+    sendOtpBtn:"Send OTP",
+    orDivider:"or",
+    usePasswordBtn:"Sign in with password instead",
+    enterOtpTitle:"Enter the 4-digit code",
+    noCode:"Didn't get a code?",
+    resend:"Resend",
+    verifyBtn:"Verify & Continue",
+    helpLine:"Need help? Ask your ASHA worker or call the GramArogya helpline.",
+    otpSubPrefix:"Sent to +91 "
+  },
+  hi: {
+    brandName:"ग्रामआरोग्य",
+    brandHeadline:"स्वास्थ्य सेवा, हर गांव तक।",
+    brandSub:"एक ही लॉगिन से मरीज़, आशा कार्यकर्ता, डॉक्टर और स्वास्थ्य केंद्र जुड़ते हैं — कमज़ोर नेटवर्क में भी।",
+    statFacilitiesLabel:"केंद्र जुड़े हुए",
+    statLanguagesLabel:"भाषाएं उपलब्ध",
+    statOffline:"ऑफलाइन भी काम करता है",
+    chooseRoleTitle:"कौन लॉगिन कर रहा है?",
+    chooseRoleSub:"सही डैशबोर्ड पर जाने के लिए अपनी भूमिका चुनें।",
+    rolePatient:"मरीज़",
+    roleWorker:"आशा / एएनएम कार्यकर्ता",
+    roleDoctor:"डॉक्टर",
+    roleFacility:"स्वास्थ्य केंद्र स्टाफ",
+    roleAdmin:"जिला प्रशासक",
+    continueBtn:"आगे बढ़ें",
+    back:"वापस",
+    enterPhoneTitle:"अपना फ़ोन नंबर डालें",
+    enterPhoneSub:"पहचान की पुष्टि के लिए हम एक ओटीपी भेजेंगे।",
+    phoneLabel:"मोबाइल नंबर",
+    sendOtpBtn:"ओटीपी भेजें",
+    orDivider:"या",
+    usePasswordBtn:"पासवर्ड से लॉगिन करें",
+    enterOtpTitle:"4 अंकों का कोड डालें",
+    noCode:"कोड नहीं मिला?",
+    resend:"फिर से भेजें",
+    verifyBtn:"सत्यापित करें और आगे बढ़ें",
+    helpLine:"मदद चाहिए? अपने आशा कार्यकर्ता से पूछें या हेल्पलाइन पर कॉल करें।",
+    otpSubPrefix:"भेजा गया +91 "
+  },
+  mr: {
+    brandName:"ग्रामआरोग्य",
+    brandHeadline:"आरोग्यसेवा, प्रत्येक गावापर्यंत.",
+    brandSub:"एका लॉगिनद्वारे रुग्ण, आशा कार्यकर्त्या, डॉक्टर आणि आरोग्य केंद्रे जोडली जातात — कमकुवत नेटवर्कमध्येही.",
+    statFacilitiesLabel:"केंद्रे जोडलेली",
+    statLanguagesLabel:"भाषा उपलब्ध",
+    statOffline:"ऑफलाइनही काम करते",
+    chooseRoleTitle:"कोण लॉगिन करत आहे?",
+    chooseRoleSub:"योग्य डॅशबोर्डवर जाण्यासाठी तुमची भूमिका निवडा.",
+    rolePatient:"रुग्ण",
+    roleWorker:"आशा / एएनएम कार्यकर्ती",
+    roleDoctor:"डॉक्टर",
+    roleFacility:"आरोग्य केंद्र कर्मचारी",
+    roleAdmin:"जिल्हा प्रशासक",
+    continueBtn:"पुढे जा",
+    back:"मागे",
+    enterPhoneTitle:"तुमचा फोन नंबर टाका",
+    enterPhoneSub:"ओळख पडताळण्यासाठी आम्ही एक ओटीपी पाठवू.",
+    phoneLabel:"मोबाइल नंबर",
+    sendOtpBtn:"ओटीपी पाठवा",
+    orDivider:"किंवा",
+    usePasswordBtn:"पासवर्डने लॉगिन करा",
+    enterOtpTitle:"4 अंकी कोड टाका",
+    noCode:"कोड मिळाला नाही?",
+    resend:"पुन्हा पाठवा",
+    verifyBtn:"पडताळणी करा आणि पुढे जा",
+    helpLine:"मदत हवी आहे? तुमच्या आशा कार्यकर्तीला विचारा किंवा हेल्पलाइनवर कॉल करा.",
+    otpSubPrefix:"पाठवले +91 "
+  }
+};
+
+let currentLang = "en";
+let selectedRole = null;
+let enteredPhone = "";
+
+function applyLang(lang){
+  currentLang = lang;
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key = el.getAttribute('data-i18n');
+    if(translations[lang][key]) el.textContent = translations[lang][key];
+  });
+  document.querySelectorAll('.lang-switch button').forEach(b=>{
+    b.classList.toggle('active', b.getAttribute('data-lang')===lang);
+  });
+  if(enteredPhone){
+    document.getElementById('otp-sub-text').textContent = translations[lang].otpSubPrefix + enteredPhone;
+  }
+}
+
+document.querySelectorAll('.lang-switch button').forEach(btn=>{
+  btn.addEventListener('click', ()=> applyLang(btn.getAttribute('data-lang')));
+});
+
+document.querySelectorAll('.role-card').forEach(card=>{
+  card.addEventListener('click', ()=>{
+    document.querySelectorAll('.role-card').forEach(c=>c.classList.remove('selected'));
+    card.classList.add('selected');
+    selectedRole = card.getAttribute('data-role');
+    document.getElementById('continue-role').disabled = false;
+  });
+});
+
+function showStep(id){
+  ['step-role','step-phone','step-otp'].forEach(s=>{
+    document.getElementById(s).classList.toggle('hidden', s!==id);
+  });
+}
+
+document.getElementById('continue-role').addEventListener('click', ()=>{
+  if(!selectedRole) return;
+  showStep('step-phone');
+});
+document.getElementById('back-to-role').addEventListener('click', ()=> showStep('step-role'));
+document.getElementById('back-to-phone').addEventListener('click', ()=> showStep('step-phone'));
+
+const API_BASE = 'http://localhost:4000/api';
+
+document.getElementById('send-otp').addEventListener('click', async ()=>{
+  const val = document.getElementById('phone-input').value.trim();
+  if(val.length !== 10) {
+    document.getElementById('phone-input').style.borderColor = '#B5502E';
+    return;
+  }
+  try{
+    await fetch(API_BASE + '/auth/send-otp', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ phone_number: val, role: selectedRole })
+    });
+  }catch(err){
+    alert('Could not reach the server. Is the backend running on port 4000?');
+    return;
+  }
+  enteredPhone = val.slice(0,5) + " " + val.slice(5);
+  document.getElementById('otp-sub-text').textContent = translations[currentLang].otpSubPrefix + enteredPhone;
+  showStep('step-otp');
+  setTimeout(()=> document.querySelector('.otp-row input').focus(), 100);
+});
+
+document.getElementById('use-password').addEventListener('click', ()=>{
+  alert('Password login form goes here — wire this to your /auth/login endpoint.');
+});
+
+// OTP auto-advance
+document.querySelectorAll('.otp-row input').forEach((input, idx, arr)=>{
+  input.addEventListener('input', ()=>{
+    input.value = input.value.replace(/[^0-9]/g,'');
+    if(input.value && idx < arr.length-1) arr[idx+1].focus();
+  });
+  input.addEventListener('keydown', (e)=>{
+    if(e.key==='Backspace' && !input.value && idx>0) arr[idx-1].focus();
+  });
+});
+
+document.getElementById('resend-otp').addEventListener('click', (e)=>{
+  e.preventDefault();
+  alert('OTP resent (wire this to your /auth/send-otp endpoint).');
+});
+
+document.getElementById('verify-otp').addEventListener('click', async ()=>{
+  const code = Array.from(document.querySelectorAll('.otp-row input')).map(i=>i.value).join('');
+  if(code.length !== 4){
+    alert('Enter all 4 digits.');
+    return;
+  }
+  const phoneDigits = enteredPhone.replace(/\s/g,'');
+  let data;
+  try{
+    const res = await fetch(API_BASE + '/auth/verify-otp', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        phone_number: phoneDigits,
+        otp: code,
+        role: selectedRole,
+        full_name: 'GramArogya User'
+      })
+    });
+    data = await res.json();
+    if(!res.ok){ alert(data.error || 'Verification failed'); return; }
+  }catch(err){
+    alert('Could not reach the server. Is the backend running on port 4000?');
+    return;
+  }
+
+  localStorage.setItem('gramarogya_token', data.token);
+  localStorage.setItem('gramarogya_role', data.user.role);
+  localStorage.setItem('gramarogya_user_id', data.user.id);
+  localStorage.setItem('gramarogya_full_name', data.user.full_name);
+
+  if(selectedRole === 'frontline_worker'){
+    window.location.href = 'asha_dashboard.html';
+  } else {
+    alert('Logged in as ' + selectedRole + '. This role\'s dashboard is the next one to build — the ASHA/ANM dashboard is wired up already.');
+  }
+});
+</script>
+</body>
+</html>

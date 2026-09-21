@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>GramArogya — ASHA Dashboard</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=Hind:wght@400;500;600;700&display=swap');
+
+:root{
+  --teal-900:#0F3B34; --teal-700:#14584D;
+  --marigold-500:#E8A33D;
+  --cream-50:#FBF8F2; --cream-100:#F3EDE0;
+  --charcoal-900:#25231F; --charcoal-600:#5B564C;
+  --sage-500:#7FA684; --clay-600:#B5502E;
+  --line:#E2DACB; --radius:12px;
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:'Hind',sans-serif;background:var(--cream-50);color:var(--charcoal-900);}
+
+header{
+  background:var(--teal-900);color:#fff;padding:16px 28px;
+  display:flex;justify-content:space-between;align-items:center;
+}
+header .brand{font-family:'Source Serif 4',serif;font-size:19px;font-weight:600;}
+header .who{font-size:13.5px;color:#CFE3DD;}
+header button{
+  background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.3);
+  color:#fff;padding:7px 14px;border-radius:8px;font-size:13px;cursor:pointer;
+}
+
+.wrap{max-width:920px;margin:0 auto;padding:28px 20px 60px 20px;}
+
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;}
+@media(max-width:760px){.grid{grid-template-columns:1fr;}}
+
+.panel{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin-bottom:18px;}
+.panel h2{font-family:'Source Serif 4',serif;font-size:18px;margin:0 0 4px 0;}
+.panel .hint{color:var(--charcoal-600);font-size:13px;margin:0 0 16px 0;}
+
+label{display:block;font-size:12.5px;font-weight:600;color:var(--charcoal-600);margin:10px 0 5px 0;}
+input,select,textarea{
+  width:100%;border:1.5px solid var(--line);border-radius:8px;padding:10px 12px;
+  font-family:'Hind',sans-serif;font-size:14.5px;outline:none;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--teal-700);}
+
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+
+.btn{
+  margin-top:16px;background:var(--teal-900);color:#fff;border:none;border-radius:8px;
+  padding:11px 18px;font-size:14.5px;font-weight:600;cursor:pointer;
+}
+.btn:hover{background:var(--teal-700);}
+.btn.secondary{background:#fff;color:var(--teal-900);border:1.5px solid var(--line);}
+.btn.small{padding:7px 12px;font-size:13px;margin-top:0;}
+
+.status-msg{font-size:13px;margin-top:10px;min-height:16px;}
+.status-msg.ok{color:var(--sage-500);}
+.status-msg.err{color:var(--clay-600);}
+
+.patient-card{
+  border:1.5px solid var(--teal-700);background:#F1F6F4;border-radius:10px;
+  padding:14px 16px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;
+}
+.patient-card .name{font-weight:700;font-size:15.5px;}
+.patient-card .meta{font-size:13px;color:var(--charcoal-600);}
+
+.search-result{
+  border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-top:8px;
+  display:flex;justify-content:space-between;align-items:center;cursor:pointer;
+}
+.search-result:hover{border-color:var(--marigold-500);}
+
+.priority-badge{
+  display:inline-block;padding:4px 12px;border-radius:999px;font-size:13px;font-weight:700;color:#fff;
+}
+.priority-badge.emergency{background:var(--clay-600);}
+.priority-badge.high{background:var(--marigold-500);}
+.priority-badge.normal{background:var(--sage-500);}
+
+.hidden{display:none !important;}
+
+.timeline-item{
+  border-left:2px solid var(--line);padding:0 0 14px 16px;margin-left:6px;position:relative;font-size:13.5px;
+}
+.timeline-item::before{
+  content:"";position:absolute;left:-6px;top:2px;width:10px;height:10px;border-radius:50%;background:var(--teal-700);
+}
+.timeline-item .t-title{font-weight:600;}
+.timeline-item .t-meta{color:var(--charcoal-600);font-size:12.5px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">🌿 GramArogya — ASHA Dashboard</div>
+  <div style="display:flex;align-items:center;gap:14px;">
+    <span class="who" id="who-label">Logged in</span>
+    <button id="logout-btn">Log out</button>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- STEP 1: FIND OR REGISTER PATIENT -->
+  <div class="panel">
+    <h2>1. Find or register a patient</h2>
+    <p class="hint">Search by name, phone, or patient ID. If nothing matches, register a new patient below.</p>
+
+    <input type="text" id="search-input" placeholder="Search patients…">
+    <div id="search-results"></div>
+
+    <details style="margin-top:16px;">
+      <summary style="cursor:pointer;font-size:13.5px;font-weight:600;color:var(--teal-700);">+ Register a new patient</summary>
+      <div style="margin-top:12px;">
+        <div class="row2">
+          <div><label>Full name *</label><input id="reg-name"></div>
+          <div><label>Gender *</label>
+            <select id="reg-gender">
+              <option value="female">Female</option>
+              <option value="male">Male</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="row2">
+          <div><label>Approximate age</label><input id="reg-age" type="number"></div>
+          <div><label>Phone number</label><input id="reg-phone" maxlength="10"></div>
+        </div>
+        <div class="row2">
+          <div><label>Village</label><input id="reg-village"></div>
+          <div><label>Emergency contact phone</label><input id="reg-emergency-phone" maxlength="10"></div>
+        </div>
+        <button class="btn" id="register-btn">Register patient</button>
+        <div class="status-msg" id="register-status"></div>
+      </div>
+    </details>
+  </div>
+
+  <!-- SELECTED PATIENT -->
+  <div id="patient-section" class="hidden">
+    <div class="patient-card">
+      <div>
+        <div class="name" id="sel-name"></div>
+        <div class="meta" id="sel-meta"></div>
+      </div>
+      <button class="btn small secondary" id="view-record-btn">View full record</button>
+    </div>
+
+    <div class="grid">
+      <!-- TRIAGE -->
+      <div class="panel">
+        <h2>2. Digital triage</h2>
+        <p class="hint">Decision support only — does not replace a doctor's diagnosis.</p>
+
+        <label>Symptoms (comma separated)</label>
+        <input id="triage-symptoms" placeholder="fever, headache, breathing difficulty">
+
+        <div class="row3">
+          <div><label>Temp (°C)</label><input id="triage-temp" type="number" step="0.1"></div>
+          <div><label>BP systolic</label><input id="triage-bp-sys" type="number"></div>
+          <div><label>BP diastolic</label><input id="triage-bp-dia" type="number"></div>
+        </div>
+        <div class="row2">
+          <div><label>Heart rate</label><input id="triage-hr" type="number"></div>
+          <div><label>SpO2 (%)</label><input id="triage-spo2" type="number"></div>
+        </div>
+
+        <button class="btn" id="triage-btn">Run triage</button>
+        <div id="triage-result" style="margin-top:14px;"></div>
+      </div>
+
+      <!-- REFERRAL -->
+      <div class="panel">
+        <h2>3. Create referral</h2>
+        <p class="hint">Send this patient to a higher facility for further care.</p>
+
+        <label>Reason for referral *</label>
+        <textarea id="referral-reason" rows="2" placeholder="e.g. High BP and fever, needs doctor evaluation"></textarea>
+
+        <div class="row2">
+          <div><label>Priority</label>
+            <select id="referral-priority">
+              <option value="normal">Normal</option>
+              <option value="high">High</option>
+              <option value="emergency">Emergency</option>
+            </select>
+          </div>
+          <div><label>Required department</label><input id="referral-department" placeholder="General Medicine"></div>
+        </div>
+
+        <button class="btn" id="referral-btn">Create referral</button>
+        <div class="status-msg" id="referral-status"></div>
+      </div>
+    </div>
+
+    <!-- FOLLOW-UP -->
+    <div class="panel">
+      <h2>4. Schedule follow-up</h2>
+      <div class="row2">
+        <div><label>Follow-up date *</label><input id="followup-date" type="date"></div>
+        <div><label>Risk category</label>
+          <select id="followup-risk">
+            <option value="">— none —</option>
+            <option value="maternal">Maternal</option>
+            <option value="child">Child</option>
+            <option value="chronic">Chronic</option>
+            <option value="elderly">Elderly</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      </div>
+      <label>Reason</label>
+      <input id="followup-reason" placeholder="e.g. Post-consultation review">
+      <button class="btn" id="followup-btn">Schedule follow-up</button>
+      <div class="status-msg" id="followup-status"></div>
+    </div>
+
+    <!-- FULL RECORD -->
+    <div class="panel hidden" id="record-panel">
+      <h2>Patient timeline</h2>
+      <div id="timeline"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const API_BASE = 'http://localhost:4000/api';
+const token = localStorage.getItem('gramarogya_token');
+const fullName = localStorage.getItem('gramarogya_full_name') || 'ASHA Worker';
+
+if(!token){
+  alert('Please log in first.');
+  window.location.href = 'gramarogya_login.html';
+}
+document.getElementById('who-label').textContent = fullName;
+document.getElementById('logout-btn').addEventListener('click', ()=>{
+  localStorage.clear();
+  window.location.href = 'gramarogya_login.html';
+});
+
+let selectedPatient = null;
+
+async function api(path, options = {}){
+  const res = await fetch(API_BASE + path, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + token,
+      ...(options.headers || {})
+    }
+  });
+  const data = await res.json();
+  if(!res.ok) throw new Error(data.error || 'Request failed');
+  return data;
+}
+
+/* ---------- Search ---------- */
+let searchTimer;
+document.getElementById('search-input').addEventListener('input', (e)=>{
+  clearTimeout(searchTimer);
+  const q = e.target.value.trim();
+  if(q.length < 2){ document.getElementById('search-results').innerHTML = ''; return; }
+  searchTimer = setTimeout(async ()=>{
+    try{
+      const data = await api('/patients/search?query=' + encodeURIComponent(q));
+      renderSearchResults(data.results);
+    }catch(err){ console.error(err); }
+  }, 300);
+});
+
+function renderSearchResults(results){
+  const container = document.getElementById('search-results');
+  container.innerHTML = '';
+  if(results.length === 0){
+    container.innerHTML = '<div class="status-msg">No matches — register below if this is a new patient.</div>';
+    return;
+  }
+  results.forEach(p=>{
+    const div = document.createElement('div');
+    div.className = 'search-result';
+    div.innerHTML = `<span>${p.full_name} · ${p.village || '—'} · ${p.patient_ref_code}</span><span>➜</span>`;
+    div.addEventListener('click', ()=> selectPatient(p));
+    container.appendChild(div);
+  });
+}
+
+function selectPatient(p){
+  selectedPatient = p;
+  document.getElementById('patient-section').classList.remove('hidden');
+  document.getElementById('sel-name').textContent = p.full_name;
+  document.getElementById('sel-meta').textContent =
+    `${p.patient_ref_code} · ${p.village || 'village not set'} · Age ${p.approximate_age || '—'}`;
+  document.getElementById('record-panel').classList.add('hidden');
+  document.getElementById('triage-result').innerHTML = '';
+  document.getElementById('search-results').innerHTML = '';
+  document.getElementById('search-input').value = '';
+  window.scrollTo({top: document.getElementById('patient-section').offsetTop - 20, behavior:'smooth'});
+}
+
+/* ---------- Register ---------- */
+document.getElementById('register-btn').addEventListener('click', async ()=>{
+  const statusEl = document.getElementById('register-status');
+  const full_name = document.getElementById('reg-name').value.trim();
+  const gender = document.getElementById('reg-gender').value;
+  if(!full_name){ statusEl.textContent = 'Name is required.'; statusEl.className='status-msg err'; return; }
+
+  try{
+    const data = await api('/patients', {
+      method: 'POST',
+      body: JSON.stringify({
+        full_name, gender,
+        approximate_age: Number(document.getElementById('reg-age').value) || null,
+        phone_number: document.getElementById('reg-phone').value.trim() || null,
+        village: document.getElementById('reg-village').value.trim() || null,
+        emergency_contact_phone: document.getElementById('reg-emergency-phone').value.trim() || null
+      })
+    });
+    statusEl.textContent = 'Registered as ' + data.patient.patient_ref_code +
+      (data.duplicate_warning ? ' — ⚠️ possible duplicate of ' + data.duplicate_warning.full_name : '');
+    statusEl.className = 'status-msg ok';
+    selectPatient({
+      id: data.patient.id, full_name: data.patient.full_name,
+      patient_ref_code: data.patient.patient_ref_code,
+      village: data.patient.village, approximate_age: data.patient.approximate_age
+    });
+  }catch(err){
+    statusEl.textContent = err.message;
+    statusEl.className = 'status-msg err';
+  }
+});
+
+/* ---------- Triage ---------- */
+document.getElementById('triage-btn').addEventListener('click', async ()=>{
+  if(!selectedPatient) return;
+  const symptoms = document.getElementById('triage-symptoms').value.split(',').map(s=>s.trim()).filter(Boolean);
+  const vitals = {
+    temperature_c: Number(document.getElementById('triage-temp').value) || undefined,
+    bp_systolic: Number(document.getElementById('triage-bp-sys').value) || undefined,
+    bp_diastolic: Number(document.getElementById('triage-bp-dia').value) || undefined,
+    heart_rate: Number(document.getElementById('triage-hr').value) || undefined,
+    spo2: Number(document.getElementById('triage-spo2').value) || undefined,
+  };
+
+  try{
+    const data = await api('/triage', {
+      method: 'POST',
+      body: JSON.stringify({ patient_id: selectedPatient.id, symptoms, vitals })
+    });
+    const el = document.getElementById('triage-result');
+    el.innerHTML = `
+      <span class="priority-badge ${data.priority}">${data.priority.toUpperCase()}</span>
+      <div style="margin-top:8px;font-size:13.5px;color:var(--charcoal-600);">${data.reasons.join(', ')}</div>
+    `;
+    if(data.priority !== 'normal'){
+      document.getElementById('referral-priority').value = data.priority;
+    }
+  }catch(err){
+    document.getElementById('triage-result').innerHTML = `<div class="status-msg err">${err.message}</div>`;
+  }
+});
+
+/* ---------- Referral ---------- */
+document.getElementById('referral-btn').addEventListener('click', async ()=>{
+  if(!selectedPatient) return;
+  const statusEl = document.getElementById('referral-status');
+  const reason = document.getElementById('referral-reason').value.trim();
+  if(!reason){ statusEl.textContent='Reason is required.'; statusEl.className='status-msg err'; return; }
+
+  try{
+    await api('/referrals', {
+      method: 'POST',
+      body: JSON.stringify({
+        patient_id: selectedPatient.id,
+        reason,
+        priority: document.getElementById('referral-priority').value,
+        required_department: document.getElementById('referral-department').value.trim() || null
+      })
+    });
+    statusEl.textContent = 'Referral created.';
+    statusEl.className = 'status-msg ok';
+  }catch(err){
+    statusEl.textContent = err.message;
+    statusEl.className = 'status-msg err';
+  }
+});
+
+/* ---------- Follow-up ---------- */
+document.getElementById('followup-btn').addEventListener('click', async ()=>{
+  if(!selectedPatient) return;
+  const statusEl = document.getElementById('followup-status');
+  const follow_up_date = document.getElementById('followup-date').value;
+  if(!follow_up_date){ statusEl.textContent='Pick a date.'; statusEl.className='status-msg err'; return; }
+
+  try{
+    await api('/follow-ups', {
+      method: 'POST',
+      body: JSON.stringify({
+        patient_id: selectedPatient.id,
+        follow_up_date,
+        risk_category: document.getElementById('followup-risk').value || null,
+        reason: document.getElementById('followup-reason').value.trim() || null
+      })
+    });
+    statusEl.textContent = 'Follow-up scheduled.';
+    statusEl.className = 'status-msg ok';
+  }catch(err){
+    statusEl.textContent = err.message;
+    statusEl.className = 'status-msg err';
+  }
+});
+
+/* ---------- Full record / timeline ---------- */
+document.getElementById('view-record-btn').addEventListener('click', async ()=>{
+  if(!selectedPatient) return;
+  try{
+    const data = await api('/patients/' + selectedPatient.id);
+    const panel = document.getElementById('record-panel');
+    const timeline = document.getElementById('timeline');
+    timeline.innerHTML = '';
+
+    const events = [];
+    data.triage_history.forEach(t => events.push({
+      date: t.created_at, title: 'Triage: ' + t.priority_result.toUpperCase(), meta: t.reason_summary
+    }));
+    data.referrals.forEach(r => events.push({
+      date: r.created_at, title: 'Referral: ' + r.status, meta: r.reason
+    }));
+    data.follow_ups.forEach(f => events.push({
+      date: f.created_at, title: 'Follow-up (' + f.status + ')', meta: f.reason || '—'
+    }));
+
+    events.sort((a,b)=> new Date(b.date) - new Date(a.date));
+
+    if(events.length === 0){
+      timeline.innerHTML = '<div class="status-msg">No history yet for this patient.</div>';
+    } else {
+      events.forEach(e=>{
+        const div = document.createElement('div');
+        div.className = 'timeline-item';
+        div.innerHTML = `<div class="t-title">${e.title}</div>
+          <div class="t-meta">${new Date(e.date).toLocaleString()} · ${e.meta || ''}</div>`;
+        timeline.appendChild(div);
+      });
+    }
+    panel.classList.remove('hidden');
+  }catch(err){
+    alert(err.message);
+  }
+});
+</script>
+</body>
+</html>
